@@ -1,0 +1,25 @@
+# Build artifacts and local dependency caches
+server/target/
+server/.cache/
+server/.mvn/apache-maven-*/
+server/.mvn/apache-maven.zip
+server/.mvn/wrapper/maven-wrapper.jar
+client/node_modules/
+client/dist/
+client/.cache/
+client/.npm-cache/
+.cache/
+benchmarks/results/
+artifacts/
+
+# Local settings
+.env
+*.log
+*.pid
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Keep the example configuration
+!.env.example

@@ -1,0 +1,6 @@
+node_modules
+dist
+.cache
+.npm-cache
+coverage
+*.log

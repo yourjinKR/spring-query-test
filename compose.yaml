@@ -1,0 +1,108 @@
+name: spring-query-lab
+
+services:
+  db:
+    image: postgres:18.6-bookworm
+    environment:
+      POSTGRES_DB: querylab
+      POSTGRES_USER: querylab
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-querylab}
+    command:
+      - postgres
+      - -c
+      - shared_preload_libraries=pg_stat_statements
+      - -c
+      - pg_stat_statements.track=all
+      - -c
+      - track_io_timing=on
+      - -c
+      - shared_buffers=256MB
+      - -c
+      - max_connections=50
+    ports:
+      - "127.0.0.1:${DB_PORT:-5432}:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql
+      - ./infra/postgres/001-observability.sql:/docker-entrypoint-initdb.d/001-observability.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U querylab -d querylab"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    shm_size: 256mb
+    cpus: ${DB_CPUS:-2.0}
+    mem_limit: ${DB_MEMORY:-1g}
+
+  server:
+    build:
+      context: ./server
+    environment:
+      DB_URL: jdbc:postgresql://db:5432/querylab
+      DB_USERNAME: querylab
+      DB_PASSWORD: ${DB_PASSWORD:-querylab}
+      DB_POOL_SIZE: ${DB_POOL_SIZE:-10}
+      LAB_SEED_ON_STARTUP: ${LAB_SEED_ON_STARTUP:-true}
+      JAVA_TOOL_OPTIONS: ${JAVA_TOOL_OPTIONS:--Xms256m -Xmx768m}
+    ports:
+      - "127.0.0.1:${SERVER_PORT:-8080}:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "--silent", "http://localhost:8080/actuator/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+      start_period: 30s
+    cpus: ${SERVER_CPUS:-2.0}
+    mem_limit: ${SERVER_MEMORY:-1g}
+
+  client:
+    build:
+      context: ./client
+    ports:
+      - "127.0.0.1:${CLIENT_PORT:-5173}:80"
+    depends_on:
+      server:
+        condition: service_healthy
+    cpus: "0.5"
+    mem_limit: 128m
+
+  prometheus:
+    image: prom/prometheus:v3.5.0
+    profiles: [monitoring]
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.retention.time=24h
+    volumes:
+      - ./infra/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    ports:
+      - "127.0.0.1:${PROMETHEUS_PORT:-9090}:9090"
+    depends_on:
+      server:
+        condition: service_healthy
+    cpus: "0.5"
+    mem_limit: 256m
+
+  k6:
+    image: grafana/k6:1.2.0
+    profiles: [tools]
+    working_dir: /scripts
+    command: [run, /scripts/load.js]
+    environment:
+      BASE_URL: http://server:8080
+      STRATEGY: ${STRATEGY:-v1}
+      IDS: ${IDS:-1,2,3,4,5,6,7,8,9,10}
+      VUS: ${VUS:-5}
+      DURATION: ${DURATION:-30s}
+      WARMUP: ${WARMUP:-20}
+    volumes:
+      - ./benchmarks:/scripts:ro
+    depends_on:
+      server:
+        condition: service_healthy
+
+volumes:
+  postgres-data:
+  prometheus-data:
