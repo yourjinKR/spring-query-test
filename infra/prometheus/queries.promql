@@ -1,0 +1,15 @@
+# Paste individual queries into http://localhost:9090.
+# HTTP duration includes server processing, unlike fetchAndAssembleMs.
+histogram_quantile(0.95, sum by (le, uri) (rate(http_server_requests_seconds_bucket{uri=~"/v[12]/posts"}[1m])))
+
+# Requests per second by route.
+sum by (uri) (rate(http_server_requests_seconds_count{uri=~"/v[12]/posts"}[1m]))
+
+# JVM heap bytes and GC pause seconds per second.
+sum(jvm_memory_used_bytes{area="heap"})
+sum(rate(jvm_gc_pause_seconds_sum[1m]))
+
+# Pool pressure and connection acquisition time. Hikari pool label may vary.
+hikaricp_connections_active
+hikaricp_connections_pending
+rate(hikaricp_connections_acquire_seconds_sum[1m]) / rate(hikaricp_connections_acquire_seconds_count[1m])
