@@ -41,6 +41,9 @@ services:
       DB_USERNAME: querylab
       DB_PASSWORD: ${DB_PASSWORD:-querylab}
       DB_POOL_SIZE: ${DB_POOL_SIZE:-10}
+      DB_POOL_MIN_IDLE: ${DB_POOL_MIN_IDLE:-${DB_POOL_SIZE:-10}}
+      DB_CONNECTION_TIMEOUT_MS: ${DB_CONNECTION_TIMEOUT_MS:-30000}
+      DB_VALIDATION_TIMEOUT_MS: ${DB_VALIDATION_TIMEOUT_MS:-500}
       LAB_SEED_ON_STARTUP: ${LAB_SEED_ON_STARTUP:-true}
       JAVA_TOOL_OPTIONS: ${JAVA_TOOL_OPTIONS:--Xms256m -Xmx768m}
     ports:
@@ -49,7 +52,7 @@ services:
       db:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "curl", "--fail", "--silent", "http://localhost:8080/actuator/health"]
+      test: ["CMD", "curl", "--fail", "--silent", "http://localhost:8080/actuator/health/liveness"]
       interval: 5s
       timeout: 3s
       retries: 30
@@ -95,6 +98,10 @@ services:
       STRATEGY: ${STRATEGY:-v1}
       IDS: ${IDS:-1,2,3,4,5,6,7,8,9,10}
       VUS: ${VUS:-5}
+      LOAD_MODEL: ${LOAD_MODEL:-closed}
+      RATE: ${RATE:-50}
+      PREALLOCATED_VUS: ${PREALLOCATED_VUS:-20}
+      MAX_VUS: ${MAX_VUS:-100}
       DURATION: ${DURATION:-30s}
       WARMUP: ${WARMUP:-20}
     volumes:

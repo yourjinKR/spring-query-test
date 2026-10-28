@@ -50,3 +50,17 @@
 - Node 반복 비교 스크립트도 같은 API에 연결해 DTO 동등성과 응답 계약을 확인했다.
 
 역할별 파일과 Lombok 적용 기준은 [백엔드 안내](../server/README.md)에 정리했다.
+
+## 동시성·풀 관측 보완 검증 (2026-10-28)
+
+업무 Java 코드는 변경하지 않고 설정·부하 도구·지표 수집을 보완했다. k6 closed/arrival 설정과 측정 요약, Prometheus label·누적 bucket 차이·counter reset·누락 지표·수집 실패·데이터 변경·실패 결과 보존·실행 컨테이너 정리에 관한 Node 테스트 15개가 통과했다. 실제 k6 1.2.0에서 두 executor의 파싱과 동작도 확인했다.
+
+- Hikari acquire/usage histogram을 실제 exporter에서 확인했다. acquire는 마이크로초 구간도 기록하며 percentile 값은 histogram 추정이다.
+- 기존 기본 데이터와 ID 1~10, 풀 2/10, VU 1/20, 전략 v1/v2의 8조건을 각각 10초씩 실행했다. 전략별 워밍업 100회는 집계에서 제외했다.
+- 8개 결과 모두 completed, 관측 경고·counter reset·HTTP 오류·계약 검사 실패·획득 timeout이 없었고, acquire 증가량은 완료 요청 수와 일치했다. 데이터도 유지됐다.
+- 풀 2·v1에서 VU 1→20일 때 acquire 평균은 약 0.004ms→24.58ms, 관측된 최대 pending은 0→18이었다. v2도 VU 20에서 평균 획득 15.02ms와 pending 18을 관측했다.
+- 풀 10·VU 20에서는 v1 acquire 평균이 5.00ms로 줄었지만 usage 평균은 2.31ms→11.01ms로 늘었다. v2도 풀 증가 시 점유 시간이 늘었다. CPU·DB·GC 추가 진단 없이 원인을 단정하거나 풀 증가가 전체 지연을 개선한다고 해석하지 않는다.
+- 이 실행은 1회·10초인 탐색용 검증이다. 절대 성능·전략 우열의 일반화에는 충분한 시간과 반복이 필요하다.
+- 별도 arrival 100 req/s·3초 실행은 301건 완료, dropped 0, 획득 증가량 301건으로 검증했다.
+- 의도적으로 VU를 1로 제한한 arrival 500 req/s·2초 실행에서는 dropped 748건을 기록하고 load_failed로 저장했다. HTTP 오류는 0이었으므로 생성하지 못한 요청과 서버 오류가 구분되는 것을 확인했다.
+- matrix 종료 후 원래 Compose 풀 설정을 복원했다. 원시 JSON·summary.csv·manifest는 로컬 `benchmarks/results/pool-matrix-verification/`에 저장했다.

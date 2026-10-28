@@ -13,3 +13,19 @@ sum(rate(jvm_gc_pause_seconds_sum[1m]))
 hikaricp_connections_active
 hikaricp_connections_pending
 rate(hikaricp_connections_acquire_seconds_sum[1m]) / rate(hikaricp_connections_acquire_seconds_count[1m])
+
+# Connection acquisition latency p95, including timeouts recorded by Hikari.
+# Acquisition is not pure queue wait. Convert seconds to milliseconds.
+1000 * histogram_quantile(0.95, sum by (le, pool) (rate(hikaricp_connections_acquire_seconds_bucket[1m])))
+
+# Borrow-to-return connection occupancy p95 and mean, milliseconds.
+1000 * histogram_quantile(0.95, sum by (le, pool) (rate(hikaricp_connections_usage_seconds_bucket[1m])))
+1000 * rate(hikaricp_connections_usage_seconds_sum[1m]) / rate(hikaricp_connections_usage_seconds_count[1m])
+
+# Sampled pending peak; brief spikes between scrapes can be missed.
+max_over_time(hikaricp_connections_pending[1m])
+
+# Pool utilization and acquisition timeouts. Pool metrics have no route tag:
+# run v1 and v2 separately, using the same stable pool configuration.
+hikaricp_connections_active / hikaricp_connections_max
+increase(hikaricp_connections_timeout_total[1m])
