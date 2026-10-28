@@ -1,20 +1,18 @@
 import http from 'k6/http';
+import execution from 'k6/execution';
 import { check, fail } from 'k6';
-import { Rate, Trend } from 'k6/metrics';
+import { Counter, Rate, Trend } from 'k6/metrics';
+import { buildMeasuredScenario, parseLoadConfig, summarizeMeasuredLoad } from './lib/load-config.mjs';
 
-const strategy = __ENV.STRATEGY || 'v1';
-if (!['v1', 'v2'].includes(strategy)) throw new Error('STRATEGY must be v1 or v2');
-const baseUrl = (__ENV.BASE_URL || 'http://localhost:8080').replace(/\/$/, '');
-const ids = (__ENV.IDS || '1,2,3,4,5,6,7,8,9,10').split(',').map((id) => id.trim());
-if (!ids.length || ids.length > 100 || ids.some((id) => !/^[1-9]\d*$/.test(id))) {
-  throw new Error('IDS must contain 1..100 positive integer IDs separated by commas');
-}
-const warmup = Number(__ENV.WARMUP || 20);
-const vus = Number(__ENV.VUS || 5);
-if (!Number.isInteger(warmup) || warmup < 0 || warmup > 1000) throw new Error('WARMUP must be 0..1000');
-if (!Number.isInteger(vus) || vus < 1 || vus > 200) throw new Error('VUS must be 1..200');
+const config = parseLoadConfig(__ENV);
+const { strategy, baseUrl, ids, warmup, loadModel, requestTimeout } = config;
 
 const measuredHttpMs = new Trend('measured_http_ms', true);
+const measuredElapsedMs = new Trend('measured_elapsed_ms', true);
+const measuredStartedRequests = new Counter('measured_started_requests');
+const measuredRequests = new Counter('measured_requests');
+const measuredSuccesses = new Counter('measured_successes');
+const measuredHttpErrors = new Rate('measured_http_errors');
 const fetchAndAssembleMs = new Trend('fetch_and_assemble_ms', true);
 const jdbcExecuteMs = new Trend('jdbc_execute_ms', true);
 const assemblyMs = new Trend('assembly_ms', true);
@@ -25,15 +23,16 @@ const url = `${baseUrl}/${strategy}/posts?ids=${encodeURIComponent(ids.join(',')
 
 export const options = {
   scenarios: {
-    measured: { executor: 'constant-vus', vus, duration: __ENV.DURATION || '30s', gracefulStop: '30s' },
+    measured: buildMeasuredScenario(config),
   },
   thresholds: {
     'http_req_failed{phase:measure}': ['rate<0.01'],
     'checks{phase:measure}': ['rate==1'],
     contract_errors: ['rate==0'],
+    ...(loadModel === 'arrival' ? { dropped_iterations: ['count==0'] } : {}),
   },
   summaryTrendStats: ['avg', 'min', 'med', 'p(95)', 'p(99)', 'max', 'count'],
-  tags: { strategy },
+  tags: { strategy, load_model: loadModel },
   setupTimeout: '5m',
 };
 
@@ -41,13 +40,18 @@ export const options = {
 // metrics also contain these calls; use measured_http_ms or phase:measure below.
 export function setup() {
   for (let i = 0; i < warmup; i += 1) {
-    const response = http.get(url, { tags: { phase: 'warmup', name: `GET /${strategy}/posts` }, timeout: '120s' });
+    const response = http.get(url, { tags: { phase: 'warmup', name: `GET /${strategy}/posts` }, timeout: requestTimeout });
     if (response.status !== 200) fail(`Warmup failed: HTTP ${response.status}: ${response.body}`);
   }
 }
 
 export default function () {
-  const response = http.get(url, { tags: { phase: 'measure', name: `GET /${strategy}/posts` }, timeout: '120s' });
+  measuredStartedRequests.add(1);
+  const response = http.get(url, { tags: { phase: 'measure', name: `GET /${strategy}/posts` }, timeout: requestTimeout });
+  measuredRequests.add(1);
+  // scenario.startTime excludes setup. The last completion may be in gracefulStop.
+  measuredElapsedMs.add(Math.max(0, Date.now() - execution.scenario.startTime));
+  measuredHttpErrors.add(response.status !== 200);
   measuredHttpMs.add(response.timings.duration);
   let result;
   try { result = response.json(); } catch { result = null; }
@@ -63,6 +67,7 @@ export default function () {
   }, { phase: 'measure' });
   contractErrors.add(!valid);
   if (!valid) return;
+  measuredSuccesses.add(1);
   fetchAndAssembleMs.add(result.metrics.fetchAndAssembleMs);
   jdbcExecuteMs.add(result.metrics.jdbcExecuteMs);
   assemblyMs.add(result.metrics.assemblyMs);
@@ -70,9 +75,18 @@ export default function () {
 }
 
 export function handleSummary(data) {
+  const measurements = summarizeMeasuredLoad(data.metrics);
   const report = {
-    metadata: { strategy, baseUrl, ids, vus, warmup, duration: __ENV.DURATION || '30s', recordedAt: new Date().toISOString() },
-    note: 'Use measured_http_ms and phase:measure metrics: aggregate built-in HTTP metrics also include setup warmup calls. This is a closed-loop constant-VU load test.',
+    metadata: { ...config, recordedAt: new Date().toISOString() },
+    measurements,
+    measurementWindow: 'Scenario start through the last completed HTTP attempt, including final in-flight drain; excludes setup warmup. Failed HTTP attempts and returned timeouts count as completed. Requests interrupted before returning are incomplete.',
+    notes: [
+      'Use measured_http_ms and phase:measure metrics. Aggregate built-in HTTP metrics and raw Counter rates can include setup and shutdown time.',
+      'completedRequestsPerSecond is completed count divided by measured_elapsed_ms.max, not a steady-state-only throughput estimate.',
+      loadModel === 'closed'
+        ? 'Closed-loop constant VUs: slower responses reduce request arrivals.'
+        : 'Open-loop constant arrival rate: dropped_iterations > 0 means the configured arrival rate was not fully delivered; inspect generator VU/CPU capacity and server latency.',
+    ],
     results: data,
   };
   const output = `${JSON.stringify(report, null, 2)}\n`;

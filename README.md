@@ -131,6 +131,8 @@ node benchmarks/compare.mjs --ids 1,2,3,4,5,6,7,8,9,10 --warmup 10 --repeats 30
 
 동시 부하는 두 전략을 따로 실행합니다.
 
+풀 크기와 동시 요청 수를 교차하고 Hikari 획득·점유 시간까지 함께 수집하려면 [동시 요청·커넥션 풀 실험](docs/CONCURRENCY.md)을 참고하세요. `benchmarks/pool-run.mjs`는 한 조건의 결과를, `benchmarks/pool-matrix.ps1`는 풀·VU별 결과를 저장합니다. 같은 목표 RPS 비교를 위한 고정 도착률 모드도 지원합니다.
+
 ```powershell
 docker compose run --rm -e STRATEGY=v1 -e VUS=5 -e DURATION=30s k6
 docker compose run --rm -e STRATEGY=v2 -e VUS=5 -e DURATION=30s k6
