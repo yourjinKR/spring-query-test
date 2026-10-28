@@ -1,0 +1,6616 @@
+{
+  "schemaVersion": 1,
+  "analyzedAt": "2026-10-28T12:04:40.607Z",
+  "campaign": {
+    "startedAt": "2026-10-28T09:55:17.1446668+00:00",
+    "completedAt": "2026-10-28T10:29:43.2920037+00:00",
+    "status": "completed_with_load_failures",
+    "datasetUnchanged": true,
+    "restoreFailed": false,
+    "restoredPoolSettings": {
+      "DB_POOL_MIN_IDLE": "10",
+      "DB_VALIDATION_TIMEOUT_MS": "500",
+      "DB_POOL_SIZE": "10",
+      "DB_CONNECTION_TIMEOUT_MS": "30000"
+    }
+  },
+  "runtime": {
+    "recordedAt": "2026-10-28T09:55:56.0993906+00:00",
+    "sourceCommit": "180a7a33c07e7df2752b64c0926008bfc804fa11",
+    "sourceStatus": [
+      "?? benchmarks/analyze-study.mjs",
+      "?? benchmarks/analyze-study.test.mjs",
+      "?? benchmarks/repeat-study.ps1",
+      "?? benchmarks/study-monitor.mjs"
+    ],
+    "dockerVersion": "28.3.2",
+    "containers": [
+      {
+        "name": "/spring-query-lab-server-1",
+        "imageId": "sha256:2db5e75f84126d6a445d7b18e05211f5c99cd6da5fdb714ce6c5069fad3dce68",
+        "imageTag": "spring-query-lab-server",
+        "nanoCpus": 2000000000,
+        "memoryBytes": 1073741824
+      },
+      {
+        "name": "/spring-query-lab-db-1",
+        "imageId": "sha256:63d4ad6f3de5e288238b3044970a677dcb0e77004d8b6050732aa0cbbeedf5d7",
+        "imageTag": "postgres:18.6-bookworm",
+        "nanoCpus": 2000000000,
+        "memoryBytes": 1073741824
+      }
+    ]
+  },
+  "parameters": {
+    "pools": [
+      2,
+      10
+    ],
+    "repeats": 5,
+    "duration": "30s",
+    "warmupDuration": "20s",
+    "warmupRequests": 20,
+    "arrivalRate": 150,
+    "preallocatedVus": 50,
+    "maxVus": 200,
+    "connectionTimeoutMs": 1000,
+    "validationTimeoutMs": 500,
+    "requestTimeout": "10s",
+    "ids": "1,2,3,4,5,6,7,8,9,10",
+    "baseUrl": "http://127.0.0.1:8080",
+    "dockerBaseUrl": "http://server:8080",
+    "totalMeasuredRuns": 60
+  },
+  "datasetBaseline": {
+    "postCount": 200,
+    "commentCount": 4000,
+    "attachmentCount": 1000,
+    "config": {
+      "postCount": 200,
+      "commentsPerPost": 20,
+      "attachmentsPerPost": 5,
+      "bodyBytes": 1024,
+      "seed": 42,
+      "distribution": "UNIFORM"
+    }
+  },
+  "methodology": [
+    "One run, not one request, is the replication unit. Warmup executions are excluded.",
+    "Latency/throughput headline summaries use clean runs; failed and invalid runs remain in all-recorded summaries and CSV.",
+    "Primary absolute comparison tables use the same common clean repeat pairs for both strategies; per-strategy all-clean summaries may have different denominators and are reported separately.",
+    "Paired comparisons require one v1 and one v2 run per repeat with matching settings. No request percentiles are pooled or averaged into a pooled percentile.",
+    "Summary values are run-level medians and observed ranges. Five pairs do not support precise confidence-interval or universal performance claims.",
+    "Closed-loop pairs have the same VU count, not necessarily the same achieved request rate. Arrival pairs require zero dropped/incomplete/error requests for latency comparisons.",
+    "Pool acquire/usage p95 are histogram estimates; pending maxima are sampled observations.",
+    "Optional Docker CPU and JVM GC data are sampled within each pool observation window; GC deltas omit window edges and are approximate."
+  ],
+  "coverage": {
+    "campaignComplete": true,
+    "expectedMeasuredRuns": 60,
+    "allPlannedRunsRecorded": true,
+    "campaignPoints": 64,
+    "excludedWarmupPoints": 4,
+    "excludedUnknownPhasePoints": 0,
+    "measuredRuns": 60,
+    "measurementValidRuns": 60,
+    "cleanRuns": 57,
+    "resourceSamples": 1543,
+    "runsWithResourceSamples": 60
+  },
+  "warnings": [
+    "Campaign contains load failures (3 recorded runs); this is separate from completion coverage",
+    "Pool 2 arrival 150: fewer than five complete clean pairs",
+    "Pool 10 arrival 150: fewer than five complete clean pairs"
+  ],
+  "groups": [
+    {
+      "poolSize": 2,
+      "model": "arrival",
+      "vus": null,
+      "rate": 150,
+      "cleanPairs": 4,
+      "pairedRunMetrics": {
+        "v1": {
+          "httpP95Ms": {
+            "n": 4,
+            "median": 5.3345255,
+            "min": 5.289637,
+            "max": 9.326426
+          },
+          "httpP99Ms": {
+            "n": 4,
+            "median": 9.3560065,
+            "min": 8.96172,
+            "max": 41.064462
+          },
+          "completedRps": {
+            "n": 4,
+            "median": 150.01583152798793,
+            "min": 149.58955099870386,
+            "max": 150.02333177788148
+          },
+          "successfulRps": {
+            "n": 4,
+            "median": 150.01583152798793,
+            "min": 149.58955099870386,
+            "max": 150.02333177788148
+          },
+          "acquireMeanMs": {
+            "n": 4,
+            "median": 0.008631433014930474,
+            "min": 0.0067924798932686254,
+            "max": 0.5015036320817781
+          },
+          "acquireP95Ms": {
+            "n": 4,
+            "median": 0.00954453125,
+            "min": 0.009542401249721043,
+            "max": 0.00982525275735294
+          },
+          "usageMeanMs": {
+            "n": 4,
+            "median": 2.2919351255276608,
+            "min": 2.266385247722733,
+            "max": 3.0015552099533416
+          },
+          "usageP95Ms": {
+            "n": 4,
+            "median": 4.036920204319022,
+            "min": 4.0222795437837835,
+            "max": 4.882719251612902
+          },
+          "sampledMaxPending": {
+            "n": 4,
+            "median": 0,
+            "min": 0,
+            "max": 2
+          },
+          "timeoutCount": {
+            "n": 4,
+            "median": 0,
+            "min": 0,
+            "max": 0
+          }
+        },
+        "v2": {
+          "httpP95Ms": {
+            "n": 4,
+            "median": 3.7342665,
+            "min": 3.5321523500000005,
+            "max": 3.80848705
+          },
+          "httpP99Ms": {
+            "n": 4,
+            "median": 5.357256835000004,
+            "min": 5.090724,
+            "max": 5.792170450000004
+          },
+          "completedRps": {
+            "n": 4,
+            "median": 150.0266682781408,
+            "min": 150.02000266702228,
+            "max": 150.02833238892038
+          },
+          "successfulRps": {
+            "n": 4,
+            "median": 150.0266682781408,
+            "min": 150.02000266702228,
+            "max": 150.02833238892038
+          },
+          "acquireMeanMs": {
+            "n": 4,
+            "median": 0.0017917194637366305,
+            "min": 0.0017047302222231843,
+            "max": 0.0037851059765199356
+          },
+          "acquireP95Ms": {
+            "n": 4,
+            "median": 0.009527521602069437,
+            "min": 0.009525395411004677,
+            "max": 0.009531772575250836
+          },
+          "usageMeanMs": {
+            "n": 4,
+            "median": 1.3035555555555525,
+            "min": 1.2852699400133234,
+            "max": 1.3285936458564804
+          },
+          "usageP95Ms": {
+            "n": 4,
+            "median": 2.0849260207652405,
+            "min": 2.0701277039674464,
+            "max": 2.088718804978118
+          },
+          "sampledMaxPending": {
+            "n": 4,
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "timeoutCount": {
+            "n": 4,
+            "median": 0,
+            "min": 0,
+            "max": 0
+          }
+        }
+      },
+      "pairedRunResources": {
+        "v1": {
+          "serverCpuMedianPercent": {
+            "n": 4,
+            "median": 33.2,
+            "min": 30.759999999999998,
+            "max": 36.36
+          },
+          "serverCpuMaxPercent": {
+            "n": 4,
+            "median": 40.42,
+            "min": 38.25,
+            "max": 61.95
+          },
+          "dbCpuMedianPercent": {
+            "n": 4,
+            "median": 24.7725,
+            "min": 23.65,
+            "max": 26.195
+          },
+          "dbCpuMaxPercent": {
+            "n": 4,
+            "median": 28.61,
+            "min": 26.36,
+            "max": 49.08
+          },
+          "loadCpuMedianPercent": {
+            "n": 4,
+            "median": 16.932499999999997,
+            "min": 15.715,
+            "max": 20.555
+          },
+          "loadCpuMaxPercent": {
+            "n": 4,
+            "median": 22.165,
+            "min": 19.53,
+            "max": 28.78
+          },
+          "gcPauseSecondsApprox": {
+            "n": 4,
+            "median": 0.24800000000000022,
+            "min": 0.238999999999999,
+            "max": 0.3089999999999993
+          },
+          "gcPauseCountApprox": {
+            "n": 4,
+            "median": 156.5,
+            "min": 156,
+            "max": 157
+          },
+          "allocatedBytesApprox": {
+            "n": 4,
+            "median": 11220439240,
+            "min": 11184631272,
+            "max": 11256329856
+          }
+        },
+        "v2": {
+          "serverCpuMedianPercent": {
+            "n": 4,
+            "median": 21.9925,
+            "min": 20.74,
+            "max": 23.46
+          },
+          "serverCpuMaxPercent": {
+            "n": 4,
+            "median": 28.285,
+            "min": 26.05,
+            "max": 34.4
+          },
+          "dbCpuMedianPercent": {
+            "n": 4,
+            "median": 8.8675,
+            "min": 8.4,
+            "max": 10.81
+          },
+          "dbCpuMaxPercent": {
+            "n": 4,
+            "median": 11.895,
+            "min": 9.2,
+            "max": 43.64
+          },
+          "loadCpuMedianPercent": {
+            "n": 4,
+            "median": 18.330000000000002,
+            "min": 16.905,
+            "max": 19.939999999999998
+          },
+          "loadCpuMaxPercent": {
+            "n": 4,
+            "median": 20.939999999999998,
+            "min": 19.17,
+            "max": 25.84
+          },
+          "gcPauseSecondsApprox": {
+            "n": 4,
+            "median": 0.02800000000000047,
+            "min": 0.025000000000000355,
+            "max": 0.03200000000000003
+          },
+          "gcPauseCountApprox": {
+            "n": 4,
+            "median": 17.5,
+            "min": 16,
+            "max": 18
+          },
+          "allocatedBytesApprox": {
+            "n": 4,
+            "median": 1254657816,
+            "min": 1147142128,
+            "max": 1290534888
+          }
+        }
+      },
+      "pairedEffects": {
+        "httpP95Ms": {
+          "direction": "lower",
+          "v2OverV1": {
+            "n": 4,
+            "median": 0.7025106751485695,
+            "min": 0.37872517832661734,
+            "max": 0.7148675297221497
+          },
+          "improvementPercent": {
+            "n": 4,
+            "median": 29.74893248514305,
+            "min": 28.513247027785027,
+            "max": 62.127482167338265
+          },
+          "v2Better": 4,
+          "v1Better": 0,
+          "equal": 0,
+          "unavailable": 0
+        },
+        "httpP99Ms": {
+          "direction": "lower",
+          "v2OverV1": {
+            "n": 4,
+            "median": 0.5677700947109383,
+            "min": 0.13157906878215056,
+            "max": 0.6193036407075383
+          },
+          "improvementPercent": {
+            "n": 4,
+            "median": 43.222990528906166,
+            "min": 38.06963592924617,
+            "max": 86.84209312178494
+          },
+          "v2Better": 4,
+          "v1Better": 0,
+          "equal": 0,
+          "unavailable": 0
+        },
+        "completedRps": {
+          "direction": "higher",
+          "v2OverV1": {
+            "n": 4,
+            "median": 1.0000555672835054,
+            "min": 1.0000333322222592,
+            "max": 1.0029109865344883
+          },
+          "improvementPercent": {
+            "n": 4,
+            "median": 0.005556728350541995,
+            "min": 0.0033332222259208066,
+            "max": 0.2910986534488291
+          },
+          "v2Better": 4,
+          "v1Better": 0,
+          "equal": 0,
+          "unavailable": 0
+        },
+        "successfulRps": {
+          "direction": "higher",
+          "v2OverV1": {
+            "n": 4,
+            "median": 1.0000555672835054,
+            "min": 1.0000333322222592,
+            "max": 1.0029109865344883
+          },
+          "improvementPercent": {
+            "n": 4,
+            "median": 0.005556728350541995,
+            "min": 0.0033332222259208066,
+            "max": 0.2910986534488291
+          },
+          "v2Better": 4,
+          "v1Better": 0,
+          "equal": 0,
+          "unavailable": 0
+        },
+        "acquireMeanMs": {
+          "direction": "lower",
+          "v2OverV1": {
+            "n": 4,
+            "median": 0.20758783734112896,
+            "min": 0.00339923803771216,
+            "max": 0.5572494929680971
+          },
+          "improvementPercent": {
+            "n": 4,
+            "median": 79.2412162658871,
+            "min": 44.27505070319029,
+            "max": 99.66007619622879
+          },
+          "v2Better": 4,
+          "v1Better": 0,
+          "equal": 0,
+          "unavailable": 0
+        },
+        "acquireP95Ms": {
+          "direction": "lower",
+          "v2OverV1": {
+            "n": 4,
+            "median": 0.9979950991312095,
+            "min": 0.969913754738012,
+            "max": 0.9988861635355653
+          },
+          "improvementPercent": {
+            "n": 4,
+            "median": 0.20049008687904601,
+            "min": 0.11138364644347476,
+            "max": 3.0086245261988
+          },
+          "v2Better": 4,
+          "v1Better": 0,
+          "equal": 0,
+          "unavailable": 0
+        },
+        "usageMeanMs": {
+          "direction": "lower",
+          "v2OverV1": {
+            "n": 4,
+            "median": 0.5676429891379298,
+            "min": 0.4299993091537131,
+            "max": 0.5862170375453393
+          },
+          "improvementPercent": {
+            "n": 4,
+            "median": 43.23570108620703,
+            "min": 41.378296245466075,
+            "max": 57.00006908462869
+          },
+          "v2Better": 4,
+          "v1Better": 0,
+          "equal": 0,
+          "unavailable": 0
+        },
+        "usageP95Ms": {
+          "direction": "lower",
+          "v2OverV1": {
+            "n": 4,
+            "median": 0.5164641521984508,
+            "min": 0.42397025044674114,
+            "max": 0.5192873300430152
+          },
+          "improvementPercent": {
+            "n": 4,
+            "median": 48.35358478015493,
+            "min": 48.07126699569848,
+            "max": 57.60297495532589
+          },
+          "v2Better": 4,
+          "v1Better": 0,
+          "equal": 0,
+          "unavailable": 0
+        },
+        "sampledMaxPending": {
+          "direction": "lower",
+          "v2OverV1": {
+            "n": 1,
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "improvementPercent": {
+            "n": 1,
+            "median": 100,
+            "min": 100,
+            "max": 100
+          },
+          "v2Better": 1,
+          "v1Better": 0,
+          "equal": 0,
+          "unavailable": 3
+        },
+        "timeoutCount": {
+          "direction": "lower",
+          "v2OverV1": {
+            "n": 0,
+            "median": null,
+            "min": null,
+            "max": null
+          },
+          "improvementPercent": {
+            "n": 0,
+            "median": null,
+            "min": null,
+            "max": null
+          },
+          "v2Better": 0,
+          "v1Better": 0,
+          "equal": 0,
+          "unavailable": 4
+        }
+      },
+      "orderSubgroups": {
+        "v1": {
+          "pairs": 2,
+          "metrics": {
+            "httpP95Ms": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 2,
+                "median": 0.7114831939921955,
+                "min": 0.7080988582622413,
+                "max": 0.7148675297221497
+              },
+              "improvementPercent": {
+                "n": 2,
+                "median": 28.851680600780448,
+                "min": 28.513247027785027,
+                "max": 29.19011417377587
+              },
+              "v2Better": 2,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "httpP99Ms": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 2,
+                "median": 0.5933958575668166,
+                "min": 0.5674880744260947,
+                "max": 0.6193036407075383
+              },
+              "improvementPercent": {
+                "n": 2,
+                "median": 40.66041424331834,
+                "min": 38.06963592924617,
+                "max": 43.251192557390524
+              },
+              "v2Better": 2,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "completedRps": {
+              "direction": "higher",
+              "v2OverV1": {
+                "n": 2,
+                "median": 1.0000555672835054,
+                "min": 1.0000444701224922,
+                "max": 1.0000666644445186
+              },
+              "improvementPercent": {
+                "n": 2,
+                "median": 0.005556728350541995,
+                "min": 0.0044470122492201725,
+                "max": 0.006666444451863818
+              },
+              "v2Better": 2,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "successfulRps": {
+              "direction": "higher",
+              "v2OverV1": {
+                "n": 2,
+                "median": 1.0000555672835054,
+                "min": 1.0000444701224922,
+                "max": 1.0000666644445186
+              },
+              "improvementPercent": {
+                "n": 2,
+                "median": 0.005556728350541995,
+                "min": 0.0044470122492201725,
+                "max": 0.006666444451863818
+              },
+              "v2Better": 2,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "acquireMeanMs": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 2,
+                "median": 0.20758783734112896,
+                "min": 0.19874502696031116,
+                "max": 0.21643064772194673
+              },
+              "improvementPercent": {
+                "n": 2,
+                "median": 79.2412162658871,
+                "min": 78.35693522780532,
+                "max": 80.12549730396888
+              },
+              "v2Better": 2,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "acquireP95Ms": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 2,
+                "median": 0.9984406313333873,
+                "min": 0.9979950991312095,
+                "max": 0.9988861635355653
+              },
+              "improvementPercent": {
+                "n": 2,
+                "median": 0.1559368666612604,
+                "min": 0.11138364644347476,
+                "max": 0.20049008687904601
+              },
+              "v2Better": 2,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "usageMeanMs": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 2,
+                "median": 0.5676429891379298,
+                "min": 0.5573754696984254,
+                "max": 0.5779105085774341
+              },
+              "improvementPercent": {
+                "n": 2,
+                "median": 43.23570108620703,
+                "min": 42.20894914225659,
+                "max": 44.26245303015746
+              },
+              "v2Better": 2,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "usageP95Ms": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 2,
+                "median": 0.5180699530710895,
+                "min": 0.5168525760991638,
+                "max": 0.5192873300430152
+              },
+              "improvementPercent": {
+                "n": 2,
+                "median": 48.19300469289105,
+                "min": 48.07126699569848,
+                "max": 48.31474239008362
+              },
+              "v2Better": 2,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "sampledMaxPending": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 1,
+                "median": 0,
+                "min": 0,
+                "max": 0
+              },
+              "improvementPercent": {
+                "n": 1,
+                "median": 100,
+                "min": 100,
+                "max": 100
+              },
+              "v2Better": 1,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 1
+            },
+            "timeoutCount": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "improvementPercent": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "v2Better": 0,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 2
+            }
+          }
+        },
+        "v2": {
+          "pairs": 2,
+          "metrics": {
+            "httpP95Ms": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 2,
+                "median": 0.5378238351807575,
+                "min": 0.37872517832661734,
+                "max": 0.6969224920348976
+              },
+              "improvementPercent": {
+                "n": 2,
+                "median": 46.21761648192425,
+                "min": 30.307750796510234,
+                "max": 62.127482167338265
+              },
+              "v2Better": 2,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "httpP99Ms": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 2,
+                "median": 0.34981559188896627,
+                "min": 0.13157906878215056,
+                "max": 0.568052114995782
+              },
+              "improvementPercent": {
+                "n": 2,
+                "median": 65.01844081110337,
+                "min": 43.1947885004218,
+                "max": 86.84209312178494
+              },
+              "v2Better": 2,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "completedRps": {
+              "direction": "higher",
+              "v2OverV1": {
+                "n": 2,
+                "median": 1.0014721593783737,
+                "min": 1.0000333322222592,
+                "max": 1.0029109865344883
+              },
+              "improvementPercent": {
+                "n": 2,
+                "median": 0.14721593783737497,
+                "min": 0.0033332222259208066,
+                "max": 0.2910986534488291
+              },
+              "v2Better": 2,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "successfulRps": {
+              "direction": "higher",
+              "v2OverV1": {
+                "n": 2,
+                "median": 1.0014721593783737,
+                "min": 1.0000333322222592,
+                "max": 1.0029109865344883
+              },
+              "improvementPercent": {
+                "n": 2,
+                "median": 0.14721593783737497,
+                "min": 0.0033332222259208066,
+                "max": 0.2910986534488291
+              },
+              "v2Better": 2,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "acquireMeanMs": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 2,
+                "median": 0.2803243655029046,
+                "min": 0.00339923803771216,
+                "max": 0.5572494929680971
+              },
+              "improvementPercent": {
+                "n": 2,
+                "median": 71.96756344970953,
+                "min": 44.27505070319029,
+                "max": 99.66007619622879
+              },
+              "v2Better": 2,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "acquireP95Ms": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 2,
+                "median": 0.9839544269346108,
+                "min": 0.969913754738012,
+                "max": 0.9979950991312095
+              },
+              "improvementPercent": {
+                "n": 2,
+                "median": 1.604557306538923,
+                "min": 0.20049008687904601,
+                "max": 3.0086245261988
+              },
+              "v2Better": 2,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "usageMeanMs": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 2,
+                "median": 0.5081081733495262,
+                "min": 0.4299993091537131,
+                "max": 0.5862170375453393
+              },
+              "improvementPercent": {
+                "n": 2,
+                "median": 49.18918266504738,
+                "min": 41.378296245466075,
+                "max": 57.00006908462869
+              },
+              "v2Better": 2,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "usageP95Ms": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 2,
+                "median": 0.4700229893722394,
+                "min": 0.42397025044674114,
+                "max": 0.5160757282977376
+              },
+              "improvementPercent": {
+                "n": 2,
+                "median": 52.99770106277606,
+                "min": 48.392427170226235,
+                "max": 57.60297495532589
+              },
+              "v2Better": 2,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "sampledMaxPending": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "improvementPercent": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "v2Better": 0,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 2
+            },
+            "timeoutCount": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "improvementPercent": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "v2Better": 0,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 2
+            }
+          }
+        },
+        "unknown": {
+          "pairs": 0,
+          "metrics": {
+            "httpP95Ms": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "improvementPercent": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "v2Better": 0,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "httpP99Ms": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "improvementPercent": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "v2Better": 0,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "completedRps": {
+              "direction": "higher",
+              "v2OverV1": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "improvementPercent": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "v2Better": 0,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "successfulRps": {
+              "direction": "higher",
+              "v2OverV1": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "improvementPercent": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "v2Better": 0,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "acquireMeanMs": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "improvementPercent": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "v2Better": 0,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "acquireP95Ms": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "improvementPercent": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "v2Better": 0,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "usageMeanMs": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "improvementPercent": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "v2Better": 0,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "usageP95Ms": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "improvementPercent": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "v2Better": 0,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "sampledMaxPending": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "improvementPercent": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "v2Better": 0,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "timeoutCount": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "improvementPercent": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "v2Better": 0,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            }
+          }
+        }
+      },
+      "firstRepeatDrift": {
+        "firstRepeatWasClean": false,
+        "byStrategy": {
+          "v1": {
+            "laterCleanRuns": 4,
+            "firstOverLaterMedian": {
+              "httpP95Ms": null,
+              "httpP99Ms": null,
+              "completedRps": null,
+              "successfulRps": null,
+              "acquireMeanMs": null,
+              "acquireP95Ms": null,
+              "usageMeanMs": null,
+              "usageP95Ms": null,
+              "sampledMaxPending": null,
+              "timeoutCount": null
+            }
+          },
+          "v2": {
+            "laterCleanRuns": 4,
+            "firstOverLaterMedian": {
+              "httpP95Ms": null,
+              "httpP99Ms": null,
+              "completedRps": null,
+              "successfulRps": null,
+              "acquireMeanMs": null,
+              "acquireP95Ms": null,
+              "usageMeanMs": null,
+              "usageP95Ms": null,
+              "sampledMaxPending": null,
+              "timeoutCount": null
+            }
+          }
+        }
+      }
+    },
+    {
+      "poolSize": 2,
+      "model": "closed",
+      "vus": 1,
+      "rate": null,
+      "cleanPairs": 5,
+      "pairedRunMetrics": {
+        "v1": {
+          "httpP95Ms": {
+            "n": 5,
+            "median": 4.9022115,
+            "min": 4.384143699999997,
+            "max": 5.460408199999998
+          },
+          "httpP99Ms": {
+            "n": 5,
+            "median": 8.623688799999986,
+            "min": 7.034179739999991,
+            "max": 9.9994973
+          },
+          "completedRps": {
+            "n": 5,
+            "median": 295.0136657556163,
+            "min": 275.4516967797853,
+            "max": 311.145923605093
+          },
+          "successfulRps": {
+            "n": 5,
+            "median": 295.0136657556163,
+            "min": 275.4516967797853,
+            "max": 311.145923605093
+          },
+          "acquireMeanMs": {
+            "n": 5,
+            "median": 0.001140387238368107,
+            "min": 0.001095609319790614,
+            "max": 0.0012278402517217147
+          },
+          "acquireP95Ms": {
+            "n": 5,
+            "median": 0.009517204301075268,
+            "min": 0.009510703019378099,
+            "max": 0.009531143759106362
+          },
+          "usageMeanMs": {
+            "n": 5,
+            "median": 1.8940232742063057,
+            "min": 1.7529726834493875,
+            "max": 2.08338375892533
+          },
+          "usageP95Ms": {
+            "n": 5,
+            "median": 3.8902690412451344,
+            "min": 3.0774593984375005,
+            "max": 4.079391609266409
+          },
+          "sampledMaxPending": {
+            "n": 5,
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "timeoutCount": {
+            "n": 5,
+            "median": 0,
+            "min": 0,
+            "max": 0
+          }
+        },
+        "v2": {
+          "httpP95Ms": {
+            "n": 5,
+            "median": 2.8812350999999983,
+            "min": 2.7138617999999997,
+            "max": 2.9707734499999985
+          },
+          "httpP99Ms": {
+            "n": 5,
+            "median": 4.553147399999975,
+            "min": 4.208384999999998,
+            "max": 5.326305140000007
+          },
+          "completedRps": {
+            "n": 5,
+            "median": 482.7655177011801,
+            "min": 477.73333333333335,
+            "max": 502.96666666666664
+          },
+          "successfulRps": {
+            "n": 5,
+            "median": 482.7655177011801,
+            "min": 477.73333333333335,
+            "max": 502.96666666666664
+          },
+          "acquireMeanMs": {
+            "n": 5,
+            "median": 0.001049412650172699,
+            "min": 0.00099461223407959,
+            "max": 0.0010637218013763493
+          },
+          "acquireP95Ms": {
+            "n": 5,
+            "median": 0.00951134629420742,
+            "min": 0.009508535489667565,
+            "max": 0.009519290645728984
+          },
+          "usageMeanMs": {
+            "n": 5,
+            "median": 0.7153708051374129,
+            "min": 0.6492146596858633,
+            "max": 0.7436236013621509
+          },
+          "usageP95Ms": {
+            "n": 5,
+            "median": 1.8838760231481477,
+            "min": 1.7853886167687592,
+            "max": 1.9170712985278078
+          },
+          "sampledMaxPending": {
+            "n": 5,
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "timeoutCount": {
+            "n": 5,
+            "median": 0,
+            "min": 0,
+            "max": 0
+          }
+        }
+      },
+      "pairedRunResources": {
+        "v1": {
+          "serverCpuMedianPercent": {
+            "n": 5,
+            "median": 63.459999999999994,
+            "min": 62.34,
+            "max": 67.57
+          },
+          "serverCpuMaxPercent": {
+            "n": 5,
+            "median": 64.93,
+            "min": 63.63,
+            "max": 73.32
+          },
+          "dbCpuMedianPercent": {
+            "n": 5,
+            "median": 42.06,
+            "min": 41.19,
+            "max": 46.81
+          },
+          "dbCpuMaxPercent": {
+            "n": 5,
+            "median": 43.34,
+            "min": 42.35,
+            "max": 54.36
+          },
+          "loadCpuMedianPercent": {
+            "n": 5,
+            "median": 28.545,
+            "min": 27.94,
+            "max": 29.1
+          },
+          "loadCpuMaxPercent": {
+            "n": 5,
+            "median": 30.78,
+            "min": 29.48,
+            "max": 31.61
+          },
+          "gcPauseSecondsApprox": {
+            "n": 5,
+            "median": 0.4660000000000002,
+            "min": 0.40700000000000014,
+            "max": 0.48600000000000065
+          },
+          "gcPauseCountApprox": {
+            "n": 5,
+            "median": 307,
+            "min": 277,
+            "max": 320
+          },
+          "allocatedBytesApprox": {
+            "n": 5,
+            "median": 22010766600,
+            "min": 19859894896,
+            "max": 22942836632
+          }
+        },
+        "v2": {
+          "serverCpuMedianPercent": {
+            "n": 5,
+            "median": 51.63,
+            "min": 50.974999999999994,
+            "max": 52.13
+          },
+          "serverCpuMaxPercent": {
+            "n": 5,
+            "median": 54.33,
+            "min": 51.98,
+            "max": 55.27
+          },
+          "dbCpuMedianPercent": {
+            "n": 5,
+            "median": 21.41,
+            "min": 20.935000000000002,
+            "max": 22.8
+          },
+          "dbCpuMaxPercent": {
+            "n": 5,
+            "median": 25.08,
+            "min": 22.21,
+            "max": 54.24
+          },
+          "loadCpuMedianPercent": {
+            "n": 5,
+            "median": 39.715,
+            "min": 38.495,
+            "max": 41.51
+          },
+          "loadCpuMaxPercent": {
+            "n": 5,
+            "median": 42.15,
+            "min": 40.18,
+            "max": 46.21
+          },
+          "gcPauseSecondsApprox": {
+            "n": 5,
+            "median": 0.06299999999999994,
+            "min": 0.06099999999999994,
+            "max": 0.07099999999999973
+          },
+          "gcPauseCountApprox": {
+            "n": 5,
+            "median": 48,
+            "min": 47,
+            "max": 55
+          },
+          "allocatedBytesApprox": {
+            "n": 5,
+            "median": 3441426400,
+            "min": 3369729968,
+            "max": 3943301120
+          }
+        }
+      },
+      "pairedEffects": {
+        "httpP95Ms": {
+          "direction": "lower",
+          "v2OverV1": {
+            "n": 5,
+            "median": 0.6060067889767707,
+            "min": 0.4970071285146778,
+            "max": 0.6571944938757368
+          },
+          "improvementPercent": {
+            "n": 5,
+            "median": 39.39932110232293,
+            "min": 34.28055061242632,
+            "max": 50.29928714853222
+          },
+          "v2Better": 5,
+          "v1Better": 0,
+          "equal": 0,
+          "unavailable": 0
+        },
+        "httpP99Ms": {
+          "direction": "lower",
+          "v2OverV1": {
+            "n": 5,
+            "median": 0.5279814132439453,
+            "min": 0.42085965661493785,
+            "max": 0.7245309742397944
+          },
+          "improvementPercent": {
+            "n": 5,
+            "median": 47.201858675605465,
+            "min": 27.54690257602056,
+            "max": 57.91403433850621
+          },
+          "v2Better": 5,
+          "v1Better": 0,
+          "equal": 0,
+          "unavailable": 0
+        },
+        "completedRps": {
+          "direction": "higher",
+          "v2OverV1": {
+            "n": 5,
+            "median": 1.6193600120513691,
+            "min": 1.55157269009864,
+            "max": 1.8259704788414215
+          },
+          "improvementPercent": {
+            "n": 5,
+            "median": 61.93600120513692,
+            "min": 55.157269009863995,
+            "max": 82.59704788414214
+          },
+          "v2Better": 5,
+          "v1Better": 0,
+          "equal": 0,
+          "unavailable": 0
+        },
+        "successfulRps": {
+          "direction": "higher",
+          "v2OverV1": {
+            "n": 5,
+            "median": 1.6193600120513691,
+            "min": 1.55157269009864,
+            "max": 1.8259704788414215
+          },
+          "improvementPercent": {
+            "n": 5,
+            "median": 61.93600120513692,
+            "min": 55.157269009863995,
+            "max": 82.59704788414214
+          },
+          "v2Better": 5,
+          "v1Better": 0,
+          "equal": 0,
+          "unavailable": 0
+        },
+        "acquireMeanMs": {
+          "direction": "lower",
+          "v2OverV1": {
+            "n": 5,
+            "median": 0.932772452713987,
+            "min": 0.8100501939767122,
+            "max": 0.9578347237619851
+          },
+          "improvementPercent": {
+            "n": 5,
+            "median": 6.7227547286012985,
+            "min": 4.2165276238014915,
+            "max": 18.99498060232878
+          },
+          "v2Better": 5,
+          "v1Better": 0,
+          "equal": 0,
+          "unavailable": 0
+        },
+        "acquireP95Ms": {
+          "direction": "lower",
+          "v2OverV1": {
+            "n": 5,
+            "median": 0.9995871972477206,
+            "min": 0.9979228657756812,
+            "max": 0.99991701073546
+          },
+          "improvementPercent": {
+            "n": 5,
+            "median": 0.041280275227939534,
+            "min": 0.008298926453997879,
+            "max": 0.20771342243187663
+          },
+          "v2Better": 5,
+          "v1Better": 0,
+          "equal": 0,
+          "unavailable": 0
+        },
+        "usageMeanMs": {
+          "direction": "lower",
+          "v2OverV1": {
+            "n": 5,
+            "median": 0.38356771780738075,
+            "min": 0.3116154942192441,
+            "max": 0.4080901042506561
+          },
+          "improvementPercent": {
+            "n": 5,
+            "median": 61.64322821926193,
+            "min": 59.190989574934385,
+            "max": 68.83845057807558
+          },
+          "v2Better": 5,
+          "v1Better": 0,
+          "equal": 0,
+          "unavailable": 0
+        },
+        "usageP95Ms": {
+          "direction": "lower",
+          "v2OverV1": {
+            "n": 5,
+            "median": 0.4854248377781115,
+            "min": 0.4376605111196527,
+            "max": 0.6116671755108171
+          },
+          "improvementPercent": {
+            "n": 5,
+            "median": 51.45751622218885,
+            "min": 38.8332824489183,
+            "max": 56.233948888034725
+          },
+          "v2Better": 5,
+          "v1Better": 0,
+          "equal": 0,
+          "unavailable": 0
+        },
+        "sampledMaxPending": {
+          "direction": "lower",
+          "v2OverV1": {
+            "n": 0,
+            "median": null,
+            "min": null,
+            "max": null
+          },
+          "improvementPercent": {
+            "n": 0,
+            "median": null,
+            "min": null,
+            "max": null
+          },
+          "v2Better": 0,
+          "v1Better": 0,
+          "equal": 0,
+          "unavailable": 5
+        },
+        "timeoutCount": {
+          "direction": "lower",
+          "v2OverV1": {
+            "n": 0,
+            "median": null,
+            "min": null,
+            "max": null
+          },
+          "improvementPercent": {
+            "n": 0,
+            "median": null,
+            "min": null,
+            "max": null
+          },
+          "v2Better": 0,
+          "v1Better": 0,
+          "equal": 0,
+          "unavailable": 5
+        }
+      },
+      "orderSubgroups": {
+        "v1": {
+          "pairs": 3,
+          "metrics": {
+            "httpP95Ms": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 3,
+                "median": 0.6257456322929318,
+                "min": 0.4970071285146778,
+                "max": 0.6571944938757368
+              },
+              "improvementPercent": {
+                "n": 3,
+                "median": 37.425436770706824,
+                "min": 34.28055061242632,
+                "max": 50.29928714853222
+              },
+              "v2Better": 3,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "httpP99Ms": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 3,
+                "median": 0.5279814132439453,
+                "min": 0.42085965661493785,
+                "max": 0.7245309742397944
+              },
+              "improvementPercent": {
+                "n": 3,
+                "median": 47.201858675605465,
+                "min": 27.54690257602056,
+                "max": 57.91403433850621
+              },
+              "v2Better": 3,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "completedRps": {
+              "direction": "higher",
+              "v2OverV1": {
+                "n": 3,
+                "median": 1.619342746941441,
+                "min": 1.55157269009864,
+                "max": 1.8259704788414215
+              },
+              "improvementPercent": {
+                "n": 3,
+                "median": 61.9342746941441,
+                "min": 55.157269009863995,
+                "max": 82.59704788414214
+              },
+              "v2Better": 3,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "successfulRps": {
+              "direction": "higher",
+              "v2OverV1": {
+                "n": 3,
+                "median": 1.619342746941441,
+                "min": 1.55157269009864,
+                "max": 1.8259704788414215
+              },
+              "improvementPercent": {
+                "n": 3,
+                "median": 61.9342746941441,
+                "min": 55.157269009863995,
+                "max": 82.59704788414214
+              },
+              "v2Better": 3,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "acquireMeanMs": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 3,
+                "median": 0.932772452713987,
+                "min": 0.8100501939767122,
+                "max": 0.9578347237619851
+              },
+              "improvementPercent": {
+                "n": 3,
+                "median": 6.7227547286012985,
+                "min": 4.2165276238014915,
+                "max": 18.99498060232878
+              },
+              "v2Better": 3,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "acquireP95Ms": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 3,
+                "median": 0.9993973929376299,
+                "min": 0.9979228657756812,
+                "max": 0.99991701073546
+              },
+              "improvementPercent": {
+                "n": 3,
+                "median": 0.06026070623701418,
+                "min": 0.008298926453997879,
+                "max": 0.20771342243187663
+              },
+              "v2Better": 3,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "usageMeanMs": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 3,
+                "median": 0.39496947529612003,
+                "min": 0.3116154942192441,
+                "max": 0.4080901042506561
+              },
+              "improvementPercent": {
+                "n": 3,
+                "median": 60.503052470388,
+                "min": 59.190989574934385,
+                "max": 68.83845057807558
+              },
+              "v2Better": 3,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "usageP95Ms": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 3,
+                "median": 0.6054455818361562,
+                "min": 0.4376605111196527,
+                "max": 0.6116671755108171
+              },
+              "improvementPercent": {
+                "n": 3,
+                "median": 39.455441816384386,
+                "min": 38.8332824489183,
+                "max": 56.233948888034725
+              },
+              "v2Better": 3,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "sampledMaxPending": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "improvementPercent": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "v2Better": 0,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 3
+            },
+            "timeoutCount": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "improvementPercent": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "v2Better": 0,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 3
+            }
+          }
+        },
+        "v2": {
+          "pairs": 2,
+          "metrics": {
+            "httpP95Ms": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 2,
+                "median": 0.5896274033537183,
+                "min": 0.573248017730666,
+                "max": 0.6060067889767707
+              },
+              "improvementPercent": {
+                "n": 2,
+                "median": 41.037259664628166,
+                "min": 39.39932110232293,
+                "max": 42.6751982269334
+              },
+              "v2Better": 2,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "httpP99Ms": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 2,
+                "median": 0.56789025720306,
+                "min": 0.5139873111410628,
+                "max": 0.621793203265057
+              },
+              "improvementPercent": {
+                "n": 2,
+                "median": 43.210974279694014,
+                "min": 37.8206796734943,
+                "max": 48.601268885893724
+              },
+              "v2Better": 2,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "completedRps": {
+              "direction": "higher",
+              "v2OverV1": {
+                "n": 2,
+                "median": 1.6528167058746774,
+                "min": 1.6193600120513691,
+                "max": 1.6862733996979855
+              },
+              "improvementPercent": {
+                "n": 2,
+                "median": 65.28167058746774,
+                "min": 61.93600120513692,
+                "max": 68.62733996979856
+              },
+              "v2Better": 2,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "successfulRps": {
+              "direction": "higher",
+              "v2OverV1": {
+                "n": 2,
+                "median": 1.6528167058746774,
+                "min": 1.6193600120513691,
+                "max": 1.6862733996979855
+              },
+              "improvementPercent": {
+                "n": 2,
+                "median": 65.28167058746774,
+                "min": 61.93600120513692,
+                "max": 68.62733996979856
+              },
+              "v2Better": 2,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "acquireMeanMs": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 2,
+                "median": 0.9106353521410036,
+                "min": 0.8639337490820629,
+                "max": 0.9573369551999443
+              },
+              "improvementPercent": {
+                "n": 2,
+                "median": 8.93646478589964,
+                "min": 4.266304480005568,
+                "max": 13.606625091793711
+              },
+              "v2Better": 2,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "acquireP95Ms": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 2,
+                "median": 0.9997246940994124,
+                "min": 0.9995871972477206,
+                "max": 0.9998621909511044
+              },
+              "improvementPercent": {
+                "n": 2,
+                "median": 0.027530590058749693,
+                "min": 0.013780904889559853,
+                "max": 0.041280275227939534
+              },
+              "v2Better": 2,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "usageMeanMs": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 2,
+                "median": 0.36606654272676636,
+                "min": 0.348565367646152,
+                "max": 0.38356771780738075
+              },
+              "improvementPercent": {
+                "n": 2,
+                "median": 63.393345727323364,
+                "min": 61.64322821926193,
+                "max": 65.1434632353848
+              },
+              "v2Better": 2,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "usageP95Ms": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 2,
+                "median": 0.48241643510508403,
+                "min": 0.4794080324320566,
+                "max": 0.4854248377781115
+              },
+              "improvementPercent": {
+                "n": 2,
+                "median": 51.75835648949159,
+                "min": 51.45751622218885,
+                "max": 52.059196756794336
+              },
+              "v2Better": 2,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "sampledMaxPending": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "improvementPercent": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "v2Better": 0,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 2
+            },
+            "timeoutCount": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "improvementPercent": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "v2Better": 0,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 2
+            }
+          }
+        },
+        "unknown": {
+          "pairs": 0,
+          "metrics": {
+            "httpP95Ms": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "improvementPercent": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "v2Better": 0,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "httpP99Ms": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "improvementPercent": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "v2Better": 0,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "completedRps": {
+              "direction": "higher",
+              "v2OverV1": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "improvementPercent": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "v2Better": 0,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "successfulRps": {
+              "direction": "higher",
+              "v2OverV1": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "improvementPercent": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "v2Better": 0,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "acquireMeanMs": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "improvementPercent": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "v2Better": 0,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "acquireP95Ms": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "improvementPercent": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "v2Better": 0,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "usageMeanMs": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "improvementPercent": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "v2Better": 0,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "usageP95Ms": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "improvementPercent": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "v2Better": 0,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "sampledMaxPending": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "improvementPercent": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "v2Better": 0,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "timeoutCount": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "improvementPercent": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "v2Better": 0,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            }
+          }
+        }
+      },
+      "firstRepeatDrift": {
+        "firstRepeatWasClean": true,
+        "byStrategy": {
+          "v1": {
+            "laterCleanRuns": 4,
+            "firstOverLaterMedian": {
+              "httpP95Ms": 1.1332152573952199,
+              "httpP99Ms": 1.1634270333406036,
+              "completedRps": 0.9318177597526843,
+              "successfulRps": 0.9318177597526843,
+              "acquireMeanMs": 1.0955162000286551,
+              "acquireP95Ms": 1.0016191264654746,
+              "usageMeanMs": 1.1032650571524962,
+              "usageP95Ms": 1.1614847303654923,
+              "sampledMaxPending": null,
+              "timeoutCount": null
+            }
+          },
+          "v2": {
+            "laterCleanRuns": 4,
+            "firstOverLaterMedian": {
+              "httpP95Ms": 0.928765420528428,
+              "httpP99Ms": 0.8722377239704102,
+              "completedRps": 1.0452180205551542,
+              "successfulRps": 1.0452180205551542,
+              "acquireMeanMs": 0.9456199839504875,
+              "acquireP95Ms": 0.9999738888336643,
+              "usageMeanMs": 0.9005257306848928,
+              "usageP95Ms": 0.9465759578620736,
+              "sampledMaxPending": null,
+              "timeoutCount": null
+            }
+          }
+        }
+      }
+    },
+    {
+      "poolSize": 2,
+      "model": "closed",
+      "vus": 20,
+      "rate": null,
+      "cleanPairs": 5,
+      "pairedRunMetrics": {
+        "v1": {
+          "httpP95Ms": {
+            "n": 5,
+            "median": 68.62740299999997,
+            "min": 52.428845599999995,
+            "max": 100.7266085
+          },
+          "httpP99Ms": {
+            "n": 5,
+            "median": 98.2422458,
+            "min": 73.10516596000004,
+            "max": 150.69323096999995
+          },
+          "completedRps": {
+            "n": 5,
+            "median": 514.0479360852197,
+            "min": 444.2150136548325,
+            "max": 593.8447190487293
+          },
+          "successfulRps": {
+            "n": 5,
+            "median": 514.0479360852197,
+            "min": 444.2150136548325,
+            "max": 593.8447190487293
+          },
+          "acquireMeanMs": {
+            "n": 5,
+            "median": 33.52541059357596,
+            "min": 29.050105457681312,
+            "max": 38.69457791835356
+          },
+          "acquireP95Ms": {
+            "n": 5,
+            "median": 61.338849437007866,
+            "min": 46.93974518017902,
+            "max": 88.34209522867535
+          },
+          "usageMeanMs": {
+            "n": 5,
+            "median": 3.2962699132236746,
+            "min": 2.8091311907566356,
+            "max": 3.899085320137954
+          },
+          "usageP95Ms": {
+            "n": 5,
+            "median": 7.027658334265732,
+            "min": 4.85982533877551,
+            "max": 8.728880111029396
+          },
+          "sampledMaxPending": {
+            "n": 5,
+            "median": 18,
+            "min": 18,
+            "max": 18
+          },
+          "timeoutCount": {
+            "n": 5,
+            "median": 0,
+            "min": 0,
+            "max": 0
+          }
+        },
+        "v2": {
+          "httpP95Ms": {
+            "n": 5,
+            "median": 36.41331325,
+            "min": 35.09796594999999,
+            "max": 53.61234639999998
+          },
+          "httpP99Ms": {
+            "n": 5,
+            "median": 55.46607169999997,
+            "min": 51.03768678,
+            "max": 78.00509488000009
+          },
+          "completedRps": {
+            "n": 5,
+            "median": 984.4400759670809,
+            "min": 735.6233757579796,
+            "max": 1013.6602918637969
+          },
+          "successfulRps": {
+            "n": 5,
+            "median": 984.4400759670809,
+            "min": 735.6233757579796,
+            "max": 1013.6602918637969
+          },
+          "acquireMeanMs": {
+            "n": 5,
+            "median": 17.192221688959563,
+            "min": 16.655596512260058,
+            "max": 22.8196012450292
+          },
+          "acquireP95Ms": {
+            "n": 5,
+            "median": 32.26943121718248,
+            "min": 31.38651103703703,
+            "max": 46.635066923471605
+          },
+          "usageMeanMs": {
+            "n": 5,
+            "median": 1.4993230894198868,
+            "min": 1.4272942413883778,
+            "max": 2.1079759047058277
+          },
+          "usageP95Ms": {
+            "n": 5,
+            "median": 3.090044009364359,
+            "min": 3.0301687551020406,
+            "max": 4.689081913599999
+          },
+          "sampledMaxPending": {
+            "n": 5,
+            "median": 18,
+            "min": 18,
+            "max": 18
+          },
+          "timeoutCount": {
+            "n": 5,
+            "median": 0,
+            "min": 0,
+            "max": 0
+          }
+        }
+      },
+      "pairedRunResources": {
+        "v1": {
+          "serverCpuMedianPercent": {
+            "n": 5,
+            "median": 161.15,
+            "min": 159,
+            "max": 165.4
+          },
+          "serverCpuMaxPercent": {
+            "n": 5,
+            "median": 168.63,
+            "min": 167.01,
+            "max": 175.06
+          },
+          "dbCpuMedianPercent": {
+            "n": 5,
+            "median": 110.79,
+            "min": 107.39,
+            "max": 116.215
+          },
+          "dbCpuMaxPercent": {
+            "n": 5,
+            "median": 115.41,
+            "min": 111.59,
+            "max": 135.59
+          },
+          "loadCpuMedianPercent": {
+            "n": 5,
+            "median": 68.28,
+            "min": 64.67,
+            "max": 68.60499999999999
+          },
+          "loadCpuMaxPercent": {
+            "n": 5,
+            "median": 71.06,
+            "min": 69.15,
+            "max": 76.61
+          },
+          "gcPauseSecondsApprox": {
+            "n": 5,
+            "median": 1.3370000000000015,
+            "min": 1.0999999999999996,
+            "max": 1.5110000000000001
+          },
+          "gcPauseCountApprox": {
+            "n": 5,
+            "median": 552,
+            "min": 509,
+            "max": 658
+          },
+          "allocatedBytesApprox": {
+            "n": 5,
+            "median": 39576362104,
+            "min": 36493455928,
+            "max": 47176202672
+          }
+        },
+        "v2": {
+          "serverCpuMedianPercent": {
+            "n": 5,
+            "median": 152.865,
+            "min": 151.82999999999998,
+            "max": 160.915
+          },
+          "serverCpuMaxPercent": {
+            "n": 5,
+            "median": 160.26,
+            "min": 157.56,
+            "max": 167.01
+          },
+          "dbCpuMedianPercent": {
+            "n": 5,
+            "median": 71.32499999999999,
+            "min": 69.3,
+            "max": 71.53999999999999
+          },
+          "dbCpuMaxPercent": {
+            "n": 5,
+            "median": 74.02,
+            "min": 73.22,
+            "max": 84.41
+          },
+          "loadCpuMedianPercent": {
+            "n": 5,
+            "median": 101.03,
+            "min": 97.86500000000001,
+            "max": 108.22
+          },
+          "loadCpuMaxPercent": {
+            "n": 5,
+            "median": 111.61,
+            "min": 103.28,
+            "max": 118.61
+          },
+          "gcPauseSecondsApprox": {
+            "n": 5,
+            "median": 0.16199999999999992,
+            "min": 0.14500000000000046,
+            "max": 0.17300000000000004
+          },
+          "gcPauseCountApprox": {
+            "n": 5,
+            "median": 95,
+            "min": 71,
+            "max": 96
+          },
+          "allocatedBytesApprox": {
+            "n": 5,
+            "median": 6811155544,
+            "min": 5090442464,
+            "max": 6882799040
+          }
+        }
+      },
+      "pairedEffects": {
+        "httpP95Ms": {
+          "direction": "lower",
+          "v2OverV1": {
+            "n": 5,
+            "median": 0.5581452218748371,
+            "min": 0.5114278614039934,
+            "max": 0.6945282283690031
+          },
+          "improvementPercent": {
+            "n": 5,
+            "median": 44.1854778125163,
+            "min": 30.547177163099693,
+            "max": 48.857213859600655
+          },
+          "v2Better": 5,
+          "v1Better": 0,
+          "equal": 0,
+          "unavailable": 0
+        },
+        "httpP99Ms": {
+          "direction": "lower",
+          "v2OverV1": {
+            "n": 5,
+            "median": 0.522765742698443,
+            "min": 0.5132345630516039,
+            "max": 0.7587161724022157
+          },
+          "improvementPercent": {
+            "n": 5,
+            "median": 47.7234257301557,
+            "min": 24.128382759778432,
+            "max": 48.676543694839616
+          },
+          "v2Better": 5,
+          "v1Better": 0,
+          "equal": 0,
+          "unavailable": 0
+        },
+        "completedRps": {
+          "direction": "higher",
+          "v2OverV1": {
+            "n": 5,
+            "median": 1.8191871578094347,
+            "min": 1.6560074584277324,
+            "max": 1.9719178323784783
+          },
+          "improvementPercent": {
+            "n": 5,
+            "median": 81.91871578094347,
+            "min": 65.60074584277325,
+            "max": 97.19178323784783
+          },
+          "v2Better": 5,
+          "v1Better": 0,
+          "equal": 0,
+          "unavailable": 0
+        },
+        "successfulRps": {
+          "direction": "higher",
+          "v2OverV1": {
+            "n": 5,
+            "median": 1.8191871578094347,
+            "min": 1.6560074584277324,
+            "max": 1.9719178323784783
+          },
+          "improvementPercent": {
+            "n": 5,
+            "median": 81.91871578094347,
+            "min": 65.60074584277325,
+            "max": 97.19178323784783
+          },
+          "v2Better": 5,
+          "v1Better": 0,
+          "equal": 0,
+          "unavailable": 0
+        },
+        "acquireMeanMs": {
+          "direction": "lower",
+          "v2OverV1": {
+            "n": 5,
+            "median": 0.5401493493926711,
+            "min": 0.4968051462269504,
+            "max": 0.5918127117990777
+          },
+          "improvementPercent": {
+            "n": 5,
+            "median": 45.985065060732886,
+            "min": 40.81872882009223,
+            "max": 50.319485377304964
+          },
+          "v2Better": 5,
+          "v1Better": 0,
+          "equal": 0,
+          "unavailable": 0
+        },
+        "acquireP95Ms": {
+          "direction": "lower",
+          "v2OverV1": {
+            "n": 5,
+            "median": 0.5560938365944622,
+            "min": 0.511690573349758,
+            "max": 0.6874649850210246
+          },
+          "improvementPercent": {
+            "n": 5,
+            "median": 44.39061634055378,
+            "min": 31.25350149789754,
+            "max": 48.8309426650242
+          },
+          "v2Better": 5,
+          "v1Better": 0,
+          "equal": 0,
+          "unavailable": 0
+        },
+        "usageMeanMs": {
+          "direction": "lower",
+          "v2OverV1": {
+            "n": 5,
+            "median": 0.4763677574934203,
+            "min": 0.43300284229227987,
+            "max": 0.5406334387756473
+          },
+          "improvementPercent": {
+            "n": 5,
+            "median": 52.36322425065797,
+            "min": 45.936656122435274,
+            "max": 56.699715770772016
+          },
+          "v2Better": 5,
+          "v1Better": 0,
+          "equal": 0,
+          "unavailable": 0
+        },
+        "usageP95Ms": {
+          "direction": "lower",
+          "v2OverV1": {
+            "n": 5,
+            "median": 0.46616870461570464,
+            "min": 0.4197372398148243,
+            "max": 0.6341544160760533
+          },
+          "improvementPercent": {
+            "n": 5,
+            "median": 53.38312953842954,
+            "min": 36.58455839239467,
+            "max": 58.02627601851758
+          },
+          "v2Better": 5,
+          "v1Better": 0,
+          "equal": 0,
+          "unavailable": 0
+        },
+        "sampledMaxPending": {
+          "direction": "lower",
+          "v2OverV1": {
+            "n": 5,
+            "median": 1,
+            "min": 1,
+            "max": 1
+          },
+          "improvementPercent": {
+            "n": 5,
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "v2Better": 0,
+          "v1Better": 0,
+          "equal": 5,
+          "unavailable": 0
+        },
+        "timeoutCount": {
+          "direction": "lower",
+          "v2OverV1": {
+            "n": 0,
+            "median": null,
+            "min": null,
+            "max": null
+          },
+          "improvementPercent": {
+            "n": 0,
+            "median": null,
+            "min": null,
+            "max": null
+          },
+          "v2Better": 0,
+          "v1Better": 0,
+          "equal": 0,
+          "unavailable": 5
+        }
+      },
+      "orderSubgroups": {
+        "v1": {
+          "pairs": 2,
+          "metrics": {
+            "httpP95Ms": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 2,
+                "median": 0.5460640319381136,
+                "min": 0.5322560463256338,
+                "max": 0.5598720175505935
+              },
+              "improvementPercent": {
+                "n": 2,
+                "median": 45.39359680618864,
+                "min": 44.012798244940655,
+                "max": 46.77439536743662
+              },
+              "v2Better": 2,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "httpP99Ms": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 2,
+                "median": 0.5154381136822554,
+                "min": 0.5132345630516039,
+                "max": 0.5176416643129071
+              },
+              "improvementPercent": {
+                "n": 2,
+                "median": 48.45618863177445,
+                "min": 48.23583356870928,
+                "max": 48.676543694839616
+              },
+              "v2Better": 2,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "completedRps": {
+              "direction": "higher",
+              "v2OverV1": {
+                "n": 2,
+                "median": 1.7375973081185836,
+                "min": 1.6560074584277324,
+                "max": 1.8191871578094347
+              },
+              "improvementPercent": {
+                "n": 2,
+                "median": 73.75973081185836,
+                "min": 65.60074584277325,
+                "max": 81.91871578094347
+              },
+              "v2Better": 2,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "successfulRps": {
+              "direction": "higher",
+              "v2OverV1": {
+                "n": 2,
+                "median": 1.7375973081185836,
+                "min": 1.6560074584277324,
+                "max": 1.8191871578094347
+              },
+              "improvementPercent": {
+                "n": 2,
+                "median": 73.75973081185836,
+                "min": 65.60074584277325,
+                "max": 81.91871578094347
+              },
+              "v2Better": 2,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "acquireMeanMs": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 2,
+                "median": 0.5649428768147187,
+                "min": 0.5401493493926711,
+                "max": 0.5897364042367662
+              },
+              "improvementPercent": {
+                "n": 2,
+                "median": 43.50571231852813,
+                "min": 41.02635957632338,
+                "max": 45.985065060732886
+              },
+              "v2Better": 2,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "acquireP95Ms": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 2,
+                "median": 0.5419928140944485,
+                "min": 0.5278917915944349,
+                "max": 0.5560938365944622
+              },
+              "improvementPercent": {
+                "n": 2,
+                "median": 45.80071859055514,
+                "min": 44.39061634055378,
+                "max": 47.21082084055651
+              },
+              "v2Better": 2,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "usageMeanMs": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 2,
+                "median": 0.5085005981345339,
+                "min": 0.4763677574934203,
+                "max": 0.5406334387756473
+              },
+              "improvementPercent": {
+                "n": 2,
+                "median": 49.14994018654662,
+                "min": 45.936656122435274,
+                "max": 52.36322425065797
+              },
+              "v2Better": 2,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "usageP95Ms": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 2,
+                "median": 0.49216139678212095,
+                "min": 0.44713109726919265,
+                "max": 0.5371916962950493
+              },
+              "improvementPercent": {
+                "n": 2,
+                "median": 50.783860321787905,
+                "min": 46.280830370495075,
+                "max": 55.286890273080736
+              },
+              "v2Better": 2,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "sampledMaxPending": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 2,
+                "median": 1,
+                "min": 1,
+                "max": 1
+              },
+              "improvementPercent": {
+                "n": 2,
+                "median": 0,
+                "min": 0,
+                "max": 0
+              },
+              "v2Better": 0,
+              "v1Better": 0,
+              "equal": 2,
+              "unavailable": 0
+            },
+            "timeoutCount": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "improvementPercent": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "v2Better": 0,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 2
+            }
+          }
+        },
+        "v2": {
+          "pairs": 3,
+          "metrics": {
+            "httpP95Ms": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 3,
+                "median": 0.5581452218748371,
+                "min": 0.5114278614039934,
+                "max": 0.6945282283690031
+              },
+              "improvementPercent": {
+                "n": 3,
+                "median": 44.1854778125163,
+                "min": 30.547177163099693,
+                "max": 48.857213859600655
+              },
+              "v2Better": 3,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "httpP99Ms": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 3,
+                "median": 0.5240185821875121,
+                "min": 0.522765742698443,
+                "max": 0.7587161724022157
+              },
+              "improvementPercent": {
+                "n": 3,
+                "median": 47.59814178124879,
+                "min": 24.128382759778432,
+                "max": 47.7234257301557
+              },
+              "v2Better": 3,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "completedRps": {
+              "direction": "higher",
+              "v2OverV1": {
+                "n": 3,
+                "median": 1.8575645135061358,
+                "min": 1.6577398845005145,
+                "max": 1.9719178323784783
+              },
+              "improvementPercent": {
+                "n": 3,
+                "median": 85.75645135061359,
+                "min": 65.77398845005145,
+                "max": 97.19178323784783
+              },
+              "v2Better": 3,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "successfulRps": {
+              "direction": "higher",
+              "v2OverV1": {
+                "n": 3,
+                "median": 1.8575645135061358,
+                "min": 1.6577398845005145,
+                "max": 1.9719178323784783
+              },
+              "improvementPercent": {
+                "n": 3,
+                "median": 85.75645135061359,
+                "min": 65.77398845005145,
+                "max": 97.19178323784783
+              },
+              "v2Better": 3,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "acquireMeanMs": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 3,
+                "median": 0.5284866599603393,
+                "min": 0.4968051462269504,
+                "max": 0.5918127117990777
+              },
+              "improvementPercent": {
+                "n": 3,
+                "median": 47.15133400396607,
+                "min": 40.81872882009223,
+                "max": 50.319485377304964
+              },
+              "v2Better": 3,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "acquireP95Ms": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 3,
+                "median": 0.5587440833961504,
+                "min": 0.511690573349758,
+                "max": 0.6874649850210246
+              },
+              "improvementPercent": {
+                "n": 3,
+                "median": 44.125591660384956,
+                "min": 31.25350149789754,
+                "max": 48.8309426650242
+              },
+              "v2Better": 3,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "usageMeanMs": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 3,
+                "median": 0.46729904729481947,
+                "min": 0.43300284229227987,
+                "max": 0.533731957536681
+              },
+              "improvementPercent": {
+                "n": 3,
+                "median": 53.27009527051805,
+                "min": 46.6268042463319,
+                "max": 56.699715770772016
+              },
+              "v2Better": 3,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "usageP95Ms": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 3,
+                "median": 0.46616870461570464,
+                "min": 0.4197372398148243,
+                "max": 0.6341544160760533
+              },
+              "improvementPercent": {
+                "n": 3,
+                "median": 53.38312953842954,
+                "min": 36.58455839239467,
+                "max": 58.02627601851758
+              },
+              "v2Better": 3,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "sampledMaxPending": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 3,
+                "median": 1,
+                "min": 1,
+                "max": 1
+              },
+              "improvementPercent": {
+                "n": 3,
+                "median": 0,
+                "min": 0,
+                "max": 0
+              },
+              "v2Better": 0,
+              "v1Better": 0,
+              "equal": 3,
+              "unavailable": 0
+            },
+            "timeoutCount": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "improvementPercent": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "v2Better": 0,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 3
+            }
+          }
+        },
+        "unknown": {
+          "pairs": 0,
+          "metrics": {
+            "httpP95Ms": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "improvementPercent": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "v2Better": 0,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "httpP99Ms": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "improvementPercent": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "v2Better": 0,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "completedRps": {
+              "direction": "higher",
+              "v2OverV1": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "improvementPercent": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "v2Better": 0,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "successfulRps": {
+              "direction": "higher",
+              "v2OverV1": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "improvementPercent": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "v2Better": 0,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "acquireMeanMs": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "improvementPercent": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "v2Better": 0,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "acquireP95Ms": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "improvementPercent": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "v2Better": 0,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "usageMeanMs": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "improvementPercent": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "v2Better": 0,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "usageP95Ms": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "improvementPercent": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "v2Better": 0,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "sampledMaxPending": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "improvementPercent": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "v2Better": 0,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "timeoutCount": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "improvementPercent": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "v2Better": 0,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            }
+          }
+        }
+      },
+      "firstRepeatDrift": {
+        "firstRepeatWasClean": true,
+        "byStrategy": {
+          "v1": {
+            "laterCleanRuns": 4,
+            "firstOverLaterMedian": {
+              "httpP95Ms": 1.031777626506391,
+              "httpP99Ms": 0.9374031548838271,
+              "completedRps": 0.9887856852897423,
+              "successfulRps": 0.9887856852897423,
+              "acquireMeanMs": 1.0099809072260688,
+              "acquireP95Ms": 1.0332559075151957,
+              "usageMeanMs": 1.0098384567734928,
+              "usageP95Ms": 1.0572743904307995,
+              "sampledMaxPending": 1,
+              "timeoutCount": null
+            }
+          },
+          "v2": {
+            "laterCleanRuns": 4,
+            "firstOverLaterMedian": {
+              "httpP95Ms": 0.9373720477267053,
+              "httpP99Ms": 0.9085408743094465,
+              "completedRps": 1.0615939725736299,
+              "successfulRps": 1.0615939725736299,
+              "acquireMeanMs": 0.9378033022094661,
+              "acquireP95Ms": 0.944353366513132,
+              "usageMeanMs": 0.9231248367133196,
+              "usageP95Ms": 0.9724033996497907,
+              "sampledMaxPending": 1,
+              "timeoutCount": null
+            }
+          }
+        }
+      }
+    },
+    {
+      "poolSize": 10,
+      "model": "arrival",
+      "vus": null,
+      "rate": 150,
+      "cleanPairs": 4,
+      "pairedRunMetrics": {
+        "v1": {
+          "httpP95Ms": {
+            "n": 4,
+            "median": 5.481002325,
+            "min": 5.180451,
+            "max": 6.461006
+          },
+          "httpP99Ms": {
+            "n": 4,
+            "median": 9.2074955,
+            "min": 7.908824500000007,
+            "max": 20.755857
+          },
+          "completedRps": {
+            "n": 4,
+            "median": 150.02583208340093,
+            "min": 150.01500150015002,
+            "max": 150.06834928149902
+          },
+          "successfulRps": {
+            "n": 4,
+            "median": 150.02583208340093,
+            "min": 150.01500150015002,
+            "max": 150.06834928149902
+          },
+          "acquireMeanMs": {
+            "n": 4,
+            "median": 0.0017268992645876847,
+            "min": 0.0015173261497502045,
+            "max": 0.0019231250833165836
+          },
+          "acquireP95Ms": {
+            "n": 4,
+            "median": 0.009536021678687997,
+            "min": 0.009531765492643781,
+            "max": 0.009555195530726257
+          },
+          "usageMeanMs": {
+            "n": 4,
+            "median": 2.469738848157202,
+            "min": 2.3070428793601456,
+            "max": 2.809597867140626
+          },
+          "usageP95Ms": {
+            "n": 4,
+            "median": 4.0935520131741825,
+            "min": 4.019454331372549,
+            "max": 4.283266266666665
+          },
+          "sampledMaxPending": {
+            "n": 4,
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "timeoutCount": {
+            "n": 4,
+            "median": 0,
+            "min": 0,
+            "max": 0
+          }
+        },
+        "v2": {
+          "httpP95Ms": {
+            "n": 4,
+            "median": 3.712172,
+            "min": 3.642375,
+            "max": 4.391674
+          },
+          "httpP99Ms": {
+            "n": 4,
+            "median": 5.572908,
+            "min": 5.104834,
+            "max": 6.217162
+          },
+          "completedRps": {
+            "n": 4,
+            "median": 150.0208316390324,
+            "min": 150.01333155579255,
+            "max": 150.02333177788148
+          },
+          "successfulRps": {
+            "n": 4,
+            "median": 150.0208316390324,
+            "min": 150.01333155579255,
+            "max": 150.02333177788148
+          },
+          "acquireMeanMs": {
+            "n": 4,
+            "median": 0.0019967794934455723,
+            "min": 0.0017639251277486365,
+            "max": 0.0022511450788816564
+          },
+          "acquireP95Ms": {
+            "n": 4,
+            "median": 0.009550927436527142,
+            "min": 0.009542401249721043,
+            "max": 0.00955733124720608
+          },
+          "usageMeanMs": {
+            "n": 4,
+            "median": 1.3359253499222723,
+            "min": 1.3121528549211172,
+            "max": 1.4710064430126344
+          },
+          "usageP95Ms": {
+            "n": 4,
+            "median": 2.084445673152894,
+            "min": 2.0801249968988547,
+            "max": 2.9756193349420847
+          },
+          "sampledMaxPending": {
+            "n": 4,
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "timeoutCount": {
+            "n": 4,
+            "median": 0,
+            "min": 0,
+            "max": 0
+          }
+        }
+      },
+      "pairedRunResources": {
+        "v1": {
+          "serverCpuMedianPercent": {
+            "n": 4,
+            "median": 35.5775,
+            "min": 33.615,
+            "max": 37.88
+          },
+          "serverCpuMaxPercent": {
+            "n": 4,
+            "median": 42.54,
+            "min": 41.72,
+            "max": 44.16
+          },
+          "dbCpuMedianPercent": {
+            "n": 4,
+            "median": 24.8425,
+            "min": 23.305,
+            "max": 25.68
+          },
+          "dbCpuMaxPercent": {
+            "n": 4,
+            "median": 30.155,
+            "min": 27.79,
+            "max": 38.67
+          },
+          "loadCpuMedianPercent": {
+            "n": 4,
+            "median": 18.814999999999998,
+            "min": 18.085,
+            "max": 20.38
+          },
+          "loadCpuMaxPercent": {
+            "n": 4,
+            "median": 21.884999999999998,
+            "min": 20.99,
+            "max": 22.4
+          },
+          "gcPauseSecondsApprox": {
+            "n": 4,
+            "median": 0.30099999999999927,
+            "min": 0.254999999999999,
+            "max": 0.3520000000000003
+          },
+          "gcPauseCountApprox": {
+            "n": 4,
+            "median": 170,
+            "min": 156,
+            "max": 184
+          },
+          "allocatedBytesApprox": {
+            "n": 4,
+            "median": 12188379416,
+            "min": 11184619888,
+            "max": 13192132296
+          }
+        },
+        "v2": {
+          "serverCpuMedianPercent": {
+            "n": 4,
+            "median": 23.810000000000002,
+            "min": 21.2,
+            "max": 27.4
+          },
+          "serverCpuMaxPercent": {
+            "n": 4,
+            "median": 26.880000000000003,
+            "min": 24.68,
+            "max": 31.45
+          },
+          "dbCpuMedianPercent": {
+            "n": 4,
+            "median": 10.2575,
+            "min": 8.98,
+            "max": 11.835
+          },
+          "dbCpuMaxPercent": {
+            "n": 4,
+            "median": 13.93,
+            "min": 11.87,
+            "max": 17.11
+          },
+          "loadCpuMedianPercent": {
+            "n": 4,
+            "median": 19.585,
+            "min": 17.96,
+            "max": 24.37
+          },
+          "loadCpuMaxPercent": {
+            "n": 4,
+            "median": 24.005000000000003,
+            "min": 21.3,
+            "max": 26.6
+          },
+          "gcPauseSecondsApprox": {
+            "n": 4,
+            "median": 0.028000000000001357,
+            "min": 0.027000000000001023,
+            "max": 0.03200000000000003
+          },
+          "gcPauseCountApprox": {
+            "n": 4,
+            "median": 15,
+            "min": 15,
+            "max": 17
+          },
+          "allocatedBytesApprox": {
+            "n": 4,
+            "median": 1075445736,
+            "min": 1075445696,
+            "max": 1218754208
+          }
+        }
+      },
+      "pairedEffects": {
+        "httpP95Ms": {
+          "direction": "lower",
+          "v2OverV1": {
+            "n": 4,
+            "median": 0.6964461763047383,
+            "min": 0.5833269617765406,
+            "max": 0.7755531252576924
+          },
+          "improvementPercent": {
+            "n": 4,
+            "median": 30.35538236952617,
+            "min": 22.44468747423076,
+            "max": 41.667303822345936
+          },
+          "v2Better": 4,
+          "v1Better": 0,
+          "equal": 0,
+          "unavailable": 0
+        },
+        "httpP99Ms": {
+          "direction": "lower",
+          "v2OverV1": {
+            "n": 4,
+            "median": 0.5680572123352128,
+            "min": 0.2830193906230902,
+            "max": 0.7861044330924266
+          },
+          "improvementPercent": {
+            "n": 4,
+            "median": 43.19427876647872,
+            "min": 21.38955669075734,
+            "max": 71.69806093769098
+          },
+          "v2Better": 4,
+          "v1Better": 0,
+          "equal": 0,
+          "unavailable": 0
+        },
+        "completedRps": {
+          "direction": "higher",
+          "v2OverV1": {
+            "n": 4,
+            "median": 0.9999777685198269,
+            "min": 0.9996666999966669,
+            "max": 1
+          },
+          "improvementPercent": {
+            "n": 4,
+            "median": -0.0022231480173107165,
+            "min": -0.03333000033330924,
+            "max": 0
+          },
+          "v2Better": 0,
+          "v1Better": 3,
+          "equal": 1,
+          "unavailable": 0
+        },
+        "successfulRps": {
+          "direction": "higher",
+          "v2OverV1": {
+            "n": 4,
+            "median": 0.9999777685198269,
+            "min": 0.9996666999966669,
+            "max": 1
+          },
+          "improvementPercent": {
+            "n": 4,
+            "median": -0.0022231480173107165,
+            "min": -0.03333000033330924,
+            "max": 0
+          },
+          "v2Better": 0,
+          "v1Better": 3,
+          "equal": 1,
+          "unavailable": 0
+        },
+        "acquireMeanMs": {
+          "direction": "lower",
+          "v2OverV1": {
+            "n": 4,
+            "median": 1.1645046335271387,
+            "min": 1.030176804810236,
+            "max": 1.3022796825828975
+          },
+          "improvementPercent": {
+            "n": 4,
+            "median": -16.45046335271386,
+            "min": -30.22796825828975,
+            "max": -3.017680481023599
+          },
+          "v2Better": 0,
+          "v1Better": 4,
+          "equal": 0,
+          "unavailable": 0
+        },
+        "acquireP95Ms": {
+          "direction": "lower",
+          "v2OverV1": {
+            "n": 4,
+            "median": 1.00133978695471,
+            "min": 0.9993300580616347,
+            "max": 1.0024586499776487
+          },
+          "improvementPercent": {
+            "n": 4,
+            "median": -0.13397869547101537,
+            "min": -0.24586499776486637,
+            "max": 0.06699419383653371
+          },
+          "v2Better": 1,
+          "v1Better": 3,
+          "equal": 0,
+          "unavailable": 0
+        },
+        "usageMeanMs": {
+          "direction": "lower",
+          "v2OverV1": {
+            "n": 4,
+            "median": 0.5632134873724297,
+            "min": 0.4829985766250352,
+            "max": 0.5699152542372989
+          },
+          "improvementPercent": {
+            "n": 4,
+            "median": 43.67865126275703,
+            "min": 43.0084745762701,
+            "max": 51.70014233749648
+          },
+          "v2Better": 4,
+          "v1Better": 0,
+          "equal": 0,
+          "unavailable": 0
+        },
+        "usageP95Ms": {
+          "direction": "lower",
+          "v2OverV1": {
+            "n": 4,
+            "median": 0.5172556904230032,
+            "min": 0.4867531015083672,
+            "max": 0.7159579263050918
+          },
+          "improvementPercent": {
+            "n": 4,
+            "median": 48.27443095769968,
+            "min": 28.40420736949082,
+            "max": 51.32468984916328
+          },
+          "v2Better": 4,
+          "v1Better": 0,
+          "equal": 0,
+          "unavailable": 0
+        },
+        "sampledMaxPending": {
+          "direction": "lower",
+          "v2OverV1": {
+            "n": 0,
+            "median": null,
+            "min": null,
+            "max": null
+          },
+          "improvementPercent": {
+            "n": 0,
+            "median": null,
+            "min": null,
+            "max": null
+          },
+          "v2Better": 0,
+          "v1Better": 0,
+          "equal": 0,
+          "unavailable": 4
+        },
+        "timeoutCount": {
+          "direction": "lower",
+          "v2OverV1": {
+            "n": 0,
+            "median": null,
+            "min": null,
+            "max": null
+          },
+          "improvementPercent": {
+            "n": 0,
+            "median": null,
+            "min": null,
+            "max": null
+          },
+          "v2Better": 0,
+          "v1Better": 0,
+          "equal": 0,
+          "unavailable": 4
+        }
+      },
+      "orderSubgroups": {
+        "v1": {
+          "pairs": 2,
+          "metrics": {
+            "httpP95Ms": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 2,
+                "median": 0.6432134714199828,
+                "min": 0.5833269617765406,
+                "max": 0.7030999810634249
+              },
+              "improvementPercent": {
+                "n": 2,
+                "median": 35.678652858001726,
+                "min": 29.690001893657513,
+                "max": 41.667303822345936
+              },
+              "v2Better": 2,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "httpP99Ms": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 2,
+                "median": 0.448892419419203,
+                "min": 0.2830193906230902,
+                "max": 0.6147654482153158
+              },
+              "improvementPercent": {
+                "n": 2,
+                "median": 55.1107580580797,
+                "min": 38.523455178468424,
+                "max": 71.69806093769098
+              },
+              "v2Better": 2,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "completedRps": {
+              "direction": "higher",
+              "v2OverV1": {
+                "n": 2,
+                "median": 0.9999833344443704,
+                "min": 0.9999666688887408,
+                "max": 1
+              },
+              "improvementPercent": {
+                "n": 2,
+                "median": -0.0016665555629624684,
+                "min": -0.003333111125924937,
+                "max": 0
+              },
+              "v2Better": 0,
+              "v1Better": 1,
+              "equal": 1,
+              "unavailable": 0
+            },
+            "successfulRps": {
+              "direction": "higher",
+              "v2OverV1": {
+                "n": 2,
+                "median": 0.9999833344443704,
+                "min": 0.9999666688887408,
+                "max": 1
+              },
+              "improvementPercent": {
+                "n": 2,
+                "median": -0.0016665555629624684,
+                "min": -0.003333111125924937,
+                "max": 0
+              },
+              "v2Better": 0,
+              "v1Better": 1,
+              "equal": 1,
+              "unavailable": 0
+            },
+            "acquireMeanMs": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 2,
+                "median": 1.1662282436965667,
+                "min": 1.030176804810236,
+                "max": 1.3022796825828975
+              },
+              "improvementPercent": {
+                "n": 2,
+                "median": -16.622824369656673,
+                "min": -30.22796825828975,
+                "max": -3.017680481023599
+              },
+              "v2Better": 0,
+              "v1Better": 2,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "acquireP95Ms": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 2,
+                "median": 1.0008943540196418,
+                "min": 0.9993300580616347,
+                "max": 1.0024586499776487
+              },
+              "improvementPercent": {
+                "n": 2,
+                "median": -0.08943540196416633,
+                "min": -0.24586499776486637,
+                "max": 0.06699419383653371
+              },
+              "v2Better": 1,
+              "v1Better": 1,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "usageMeanMs": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 2,
+                "median": 0.5264569154311671,
+                "min": 0.4829985766250352,
+                "max": 0.5699152542372989
+              },
+              "improvementPercent": {
+                "n": 2,
+                "median": 47.35430845688329,
+                "min": 43.0084745762701,
+                "max": 51.70014233749648
+              },
+              "v2Better": 2,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "usageP95Ms": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 2,
+                "median": 0.5021336885904208,
+                "min": 0.4867531015083672,
+                "max": 0.5175142756724744
+              },
+              "improvementPercent": {
+                "n": 2,
+                "median": 49.786631140957915,
+                "min": 48.24857243275255,
+                "max": 51.32468984916328
+              },
+              "v2Better": 2,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "sampledMaxPending": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "improvementPercent": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "v2Better": 0,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 2
+            },
+            "timeoutCount": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "improvementPercent": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "v2Better": 0,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 2
+            }
+          }
+        },
+        "v2": {
+          "pairs": 2,
+          "metrics": {
+            "httpP95Ms": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 2,
+                "median": 0.732672748401872,
+                "min": 0.6897923715460518,
+                "max": 0.7755531252576924
+              },
+              "improvementPercent": {
+                "n": 2,
+                "median": 26.732725159812794,
+                "min": 22.44468747423076,
+                "max": 31.020762845394824
+              },
+              "v2Better": 2,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "httpP99Ms": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 2,
+                "median": 0.6537267047737683,
+                "min": 0.5213489764551098,
+                "max": 0.7861044330924266
+              },
+              "improvementPercent": {
+                "n": 2,
+                "median": 34.62732952262318,
+                "min": 21.38955669075734,
+                "max": 47.86510235448902
+              },
+              "v2Better": 2,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "completedRps": {
+              "direction": "higher",
+              "v2OverV1": {
+                "n": 2,
+                "median": 0.9998277840737899,
+                "min": 0.9996666999966669,
+                "max": 0.999988868150913
+              },
+              "improvementPercent": {
+                "n": 2,
+                "median": -0.017221592621002868,
+                "min": -0.03333000033330924,
+                "max": -0.0011131849086964962
+              },
+              "v2Better": 0,
+              "v1Better": 2,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "successfulRps": {
+              "direction": "higher",
+              "v2OverV1": {
+                "n": 2,
+                "median": 0.9998277840737899,
+                "min": 0.9996666999966669,
+                "max": 0.999988868150913
+              },
+              "improvementPercent": {
+                "n": 2,
+                "median": -0.017221592621002868,
+                "min": -0.03333000033330924,
+                "max": -0.0011131849086964962
+              },
+              "v2Better": 0,
+              "v1Better": 2,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "acquireMeanMs": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 2,
+                "median": 1.1645046335271387,
+                "min": 1.1625220642503455,
+                "max": 1.1664872028039317
+              },
+              "improvementPercent": {
+                "n": 2,
+                "median": -16.45046335271386,
+                "min": -16.64872028039317,
+                "max": -16.252206425034554
+              },
+              "v2Better": 0,
+              "v1Better": 2,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "acquireP95Ms": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 2,
+                "median": 1.00133978695471,
+                "min": 1.000445436286543,
+                "max": 1.0022341376228774
+              },
+              "improvementPercent": {
+                "n": 2,
+                "median": -0.13397869547101537,
+                "min": -0.22341376228773857,
+                "max": -0.04454362865429218
+              },
+              "v2Better": 0,
+              "v1Better": 2,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "usageMeanMs": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 2,
+                "median": 0.5632134873724297,
+                "min": 0.558275829473471,
+                "max": 0.5681511452713884
+              },
+              "improvementPercent": {
+                "n": 2,
+                "median": 43.67865126275703,
+                "min": 43.184885472861154,
+                "max": 44.172417052652904
+              },
+              "v2Better": 2,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "usageP95Ms": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 2,
+                "median": 0.6164775157393119,
+                "min": 0.516997105173532,
+                "max": 0.7159579263050918
+              },
+              "improvementPercent": {
+                "n": 2,
+                "median": 38.35224842606881,
+                "min": 28.40420736949082,
+                "max": 48.3002894826468
+              },
+              "v2Better": 2,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "sampledMaxPending": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "improvementPercent": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "v2Better": 0,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 2
+            },
+            "timeoutCount": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "improvementPercent": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "v2Better": 0,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 2
+            }
+          }
+        },
+        "unknown": {
+          "pairs": 0,
+          "metrics": {
+            "httpP95Ms": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "improvementPercent": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "v2Better": 0,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "httpP99Ms": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "improvementPercent": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "v2Better": 0,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "completedRps": {
+              "direction": "higher",
+              "v2OverV1": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "improvementPercent": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "v2Better": 0,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "successfulRps": {
+              "direction": "higher",
+              "v2OverV1": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "improvementPercent": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "v2Better": 0,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "acquireMeanMs": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "improvementPercent": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "v2Better": 0,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "acquireP95Ms": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "improvementPercent": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "v2Better": 0,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "usageMeanMs": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "improvementPercent": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "v2Better": 0,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "usageP95Ms": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "improvementPercent": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "v2Better": 0,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "sampledMaxPending": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "improvementPercent": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "v2Better": 0,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "timeoutCount": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "improvementPercent": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "v2Better": 0,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            }
+          }
+        }
+      },
+      "firstRepeatDrift": {
+        "firstRepeatWasClean": false,
+        "byStrategy": {
+          "v1": {
+            "laterCleanRuns": 4,
+            "firstOverLaterMedian": {
+              "httpP95Ms": null,
+              "httpP99Ms": null,
+              "completedRps": null,
+              "successfulRps": null,
+              "acquireMeanMs": null,
+              "acquireP95Ms": null,
+              "usageMeanMs": null,
+              "usageP95Ms": null,
+              "sampledMaxPending": null,
+              "timeoutCount": null
+            }
+          },
+          "v2": {
+            "laterCleanRuns": 4,
+            "firstOverLaterMedian": {
+              "httpP95Ms": null,
+              "httpP99Ms": null,
+              "completedRps": null,
+              "successfulRps": null,
+              "acquireMeanMs": null,
+              "acquireP95Ms": null,
+              "usageMeanMs": null,
+              "usageP95Ms": null,
+              "sampledMaxPending": null,
+              "timeoutCount": null
+            }
+          }
+        }
+      }
+    },
+    {
+      "poolSize": 10,
+      "model": "closed",
+      "vus": 1,
+      "rate": null,
+      "cleanPairs": 5,
+      "pairedRunMetrics": {
+        "v1": {
+          "httpP95Ms": {
+            "n": 5,
+            "median": 5.000227499999999,
+            "min": 4.6264069999999995,
+            "max": 6.848884199999991
+          },
+          "httpP99Ms": {
+            "n": 5,
+            "median": 8.41607668000001,
+            "min": 7.6954855,
+            "max": 14.12139064000001
+          },
+          "completedRps": {
+            "n": 5,
+            "median": 281.68122125191655,
+            "min": 246.9502033197787,
+            "max": 299.843328110937
+          },
+          "successfulRps": {
+            "n": 5,
+            "median": 281.68122125191655,
+            "min": 246.9502033197787,
+            "max": 299.843328110937
+          },
+          "acquireMeanMs": {
+            "n": 5,
+            "median": 0.0011014680674210854,
+            "min": 0.0010316414625487532,
+            "max": 0.001515140639773793
+          },
+          "acquireP95Ms": {
+            "n": 5,
+            "median": 0.009524795349389015,
+            "min": 0.00951586859688196,
+            "max": 0.009538623119663912
+          },
+          "usageMeanMs": {
+            "n": 5,
+            "median": 2.037273695420645,
+            "min": 1.860589216231251,
+            "max": 2.381293022000274
+          },
+          "usageP95Ms": {
+            "n": 5,
+            "median": 3.940313653333333,
+            "min": 3.1216526192848773,
+            "max": 4.605367978947365
+          },
+          "sampledMaxPending": {
+            "n": 5,
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "timeoutCount": {
+            "n": 5,
+            "median": 0,
+            "min": 0,
+            "max": 0
+          }
+        },
+        "v2": {
+          "httpP95Ms": {
+            "n": 5,
+            "median": 3.0601895,
+            "min": 2.91210725,
+            "max": 3.8708572999999933
+          },
+          "httpP99Ms": {
+            "n": 5,
+            "median": 6.14297625,
+            "min": 4.461701750000003,
+            "max": 8.597986600000006
+          },
+          "completedRps": {
+            "n": 5,
+            "median": 441.0196601132956,
+            "min": 365.56666666666666,
+            "max": 472.23148209880657
+          },
+          "successfulRps": {
+            "n": 5,
+            "median": 441.0196601132956,
+            "min": 365.56666666666666,
+            "max": 472.23148209880657
+          },
+          "acquireMeanMs": {
+            "n": 5,
+            "median": 0.0011149254075664438,
+            "min": 0.0009666262939097349,
+            "max": 0.0013461021245553698
+          },
+          "acquireP95Ms": {
+            "n": 5,
+            "median": 0.00951814131126671,
+            "min": 0.009517258345318295,
+            "max": 0.009523495465787303
+          },
+          "usageMeanMs": {
+            "n": 5,
+            "median": 0.8855307895731208,
+            "min": 0.7663419455033175,
+            "max": 1.1836418345946926
+          },
+          "usageP95Ms": {
+            "n": 5,
+            "median": 1.950679151207115,
+            "min": 1.8944184278290987,
+            "max": 2.085597712156731
+          },
+          "sampledMaxPending": {
+            "n": 5,
+            "median": 0,
+            "min": 0,
+            "max": 0
+          },
+          "timeoutCount": {
+            "n": 5,
+            "median": 0,
+            "min": 0,
+            "max": 0
+          }
+        }
+      },
+      "pairedRunResources": {
+        "v1": {
+          "serverCpuMedianPercent": {
+            "n": 5,
+            "median": 62.28,
+            "min": 61.97,
+            "max": 64.07
+          },
+          "serverCpuMaxPercent": {
+            "n": 5,
+            "median": 65.97,
+            "min": 63.57,
+            "max": 71.8
+          },
+          "dbCpuMedianPercent": {
+            "n": 5,
+            "median": 41.915,
+            "min": 40.004999999999995,
+            "max": 46.45
+          },
+          "dbCpuMaxPercent": {
+            "n": 5,
+            "median": 45.99,
+            "min": 41.79,
+            "max": 51.75
+          },
+          "loadCpuMedianPercent": {
+            "n": 5,
+            "median": 27.59,
+            "min": 26.84,
+            "max": 28.215
+          },
+          "loadCpuMaxPercent": {
+            "n": 5,
+            "median": 29.58,
+            "min": 27.56,
+            "max": 35.36
+          },
+          "gcPauseSecondsApprox": {
+            "n": 5,
+            "median": 0.4740000000000002,
+            "min": 0.42900000000000005,
+            "max": 0.5730000000000004
+          },
+          "gcPauseCountApprox": {
+            "n": 5,
+            "median": 291,
+            "min": 254,
+            "max": 372
+          },
+          "allocatedBytesApprox": {
+            "n": 5,
+            "median": 20863640776,
+            "min": 18210875592,
+            "max": 26671049920
+          }
+        },
+        "v2": {
+          "serverCpuMedianPercent": {
+            "n": 5,
+            "median": 51.915,
+            "min": 49.26,
+            "max": 56.07
+          },
+          "serverCpuMaxPercent": {
+            "n": 5,
+            "median": 53.95,
+            "min": 50.93,
+            "max": 133.95
+          },
+          "dbCpuMedianPercent": {
+            "n": 5,
+            "median": 21.950000000000003,
+            "min": 21.384999999999998,
+            "max": 22.425
+          },
+          "dbCpuMaxPercent": {
+            "n": 5,
+            "median": 24.65,
+            "min": 22.23,
+            "max": 27.53
+          },
+          "loadCpuMedianPercent": {
+            "n": 5,
+            "median": 39.25,
+            "min": 36.09,
+            "max": 42.11
+          },
+          "loadCpuMaxPercent": {
+            "n": 5,
+            "median": 40.87,
+            "min": 37.9,
+            "max": 44.26
+          },
+          "gcPauseSecondsApprox": {
+            "n": 5,
+            "median": 0.06299999999999883,
+            "min": 0.050999999999999934,
+            "max": 0.06600000000000072
+          },
+          "gcPauseCountApprox": {
+            "n": 5,
+            "median": 43,
+            "min": 35,
+            "max": 46
+          },
+          "allocatedBytesApprox": {
+            "n": 5,
+            "median": 3082854936,
+            "min": 2509373424,
+            "max": 3298032584
+          }
+        }
+      },
+      "pairedEffects": {
+        "httpP95Ms": {
+          "direction": "lower",
+          "v2OverV1": {
+            "n": 5,
+            "median": 0.6066731139205255,
+            "min": 0.4648744097615206,
+            "max": 0.8268300853014209
+          },
+          "improvementPercent": {
+            "n": 5,
+            "median": 39.33268860794745,
+            "min": 17.31699146985791,
+            "max": 53.51255902384794
+          },
+          "v2Better": 5,
+          "v1Better": 0,
+          "equal": 0,
+          "unavailable": 0
+        },
+        "httpP99Ms": {
+          "direction": "lower",
+          "v2OverV1": {
+            "n": 5,
+            "median": 0.6815747622197126,
+            "min": 0.4017357202718092,
+            "max": 1.0216145749280405
+          },
+          "improvementPercent": {
+            "n": 5,
+            "median": 31.842523778028742,
+            "min": -2.161457492804053,
+            "max": 59.826427972819076
+          },
+          "v2Better": 4,
+          "v1Better": 1,
+          "equal": 0,
+          "unavailable": 0
+        },
+        "completedRps": {
+          "direction": "higher",
+          "v2OverV1": {
+            "n": 5,
+            "median": 1.5879501178521114,
+            "min": 1.225459205870302,
+            "max": 1.7858647378484402
+          },
+          "improvementPercent": {
+            "n": 5,
+            "median": 58.79501178521114,
+            "min": 22.5459205870302,
+            "max": 78.58647378484403
+          },
+          "v2Better": 5,
+          "v1Better": 0,
+          "equal": 0,
+          "unavailable": 0
+        },
+        "successfulRps": {
+          "direction": "higher",
+          "v2OverV1": {
+            "n": 5,
+            "median": 1.5879501178521114,
+            "min": 1.225459205870302,
+            "max": 1.7858647378484402
+          },
+          "improvementPercent": {
+            "n": 5,
+            "median": 58.79501178521114,
+            "min": 22.5459205870302,
+            "max": 78.58647378484403
+          },
+          "v2Better": 5,
+          "v1Better": 0,
+          "equal": 0,
+          "unavailable": 0
+        },
+        "acquireMeanMs": {
+          "direction": "lower",
+          "v2OverV1": {
+            "n": 5,
+            "median": 1.0268902301443723,
+            "min": 0.6379779332260865,
+            "max": 1.1412722574543945
+          },
+          "improvementPercent": {
+            "n": 5,
+            "median": -2.6890230144372307,
+            "min": -14.127225745439453,
+            "max": 36.202206677391345
+          },
+          "v2Better": 2,
+          "v1Better": 3,
+          "equal": 0,
+          "unavailable": 0
+        },
+        "acquireP95Ms": {
+          "direction": "lower",
+          "v2OverV1": {
+            "n": 5,
+            "median": 0.9994981558597935,
+            "min": 0.9977601825674847,
+            "max": 1.0001783219748002
+          },
+          "improvementPercent": {
+            "n": 5,
+            "median": 0.05018441402064866,
+            "min": -0.01783219748001663,
+            "max": 0.22398174325153342
+          },
+          "v2Better": 4,
+          "v1Better": 1,
+          "equal": 0,
+          "unavailable": 0
+        },
+        "usageMeanMs": {
+          "direction": "lower",
+          "v2OverV1": {
+            "n": 5,
+            "median": 0.42920019177780966,
+            "min": 0.3718697285012323,
+            "max": 0.6271038291272212
+          },
+          "improvementPercent": {
+            "n": 5,
+            "median": 57.079980822219035,
+            "min": 37.28961708727788,
+            "max": 62.813027149876774
+          },
+          "v2Better": 5,
+          "v1Better": 0,
+          "equal": 0,
+          "unavailable": 0
+        },
+        "usageP95Ms": {
+          "direction": "lower",
+          "v2OverV1": {
+            "n": 5,
+            "median": 0.4950568210621827,
+            "min": 0.4280191790188108,
+            "max": 0.6680334820947351
+          },
+          "improvementPercent": {
+            "n": 5,
+            "median": 50.49431789378174,
+            "min": 33.19665179052649,
+            "max": 57.19808209811892
+          },
+          "v2Better": 5,
+          "v1Better": 0,
+          "equal": 0,
+          "unavailable": 0
+        },
+        "sampledMaxPending": {
+          "direction": "lower",
+          "v2OverV1": {
+            "n": 0,
+            "median": null,
+            "min": null,
+            "max": null
+          },
+          "improvementPercent": {
+            "n": 0,
+            "median": null,
+            "min": null,
+            "max": null
+          },
+          "v2Better": 0,
+          "v1Better": 0,
+          "equal": 0,
+          "unavailable": 5
+        },
+        "timeoutCount": {
+          "direction": "lower",
+          "v2OverV1": {
+            "n": 0,
+            "median": null,
+            "min": null,
+            "max": null
+          },
+          "improvementPercent": {
+            "n": 0,
+            "median": null,
+            "min": null,
+            "max": null
+          },
+          "v2Better": 0,
+          "v1Better": 0,
+          "equal": 0,
+          "unavailable": 5
+        }
+      },
+      "orderSubgroups": {
+        "v1": {
+          "pairs": 2,
+          "metrics": {
+            "httpP95Ms": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 2,
+                "median": 0.5945340324751269,
+                "min": 0.5823949510297283,
+                "max": 0.6066731139205255
+              },
+              "improvementPercent": {
+                "n": 2,
+                "median": 40.54659675248732,
+                "min": 39.33268860794745,
+                "max": 41.760504897027175
+              },
+              "v2Better": 2,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "httpP99Ms": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 2,
+                "median": 0.6306782365990911,
+                "min": 0.5797817109784695,
+                "max": 0.6815747622197126
+              },
+              "improvementPercent": {
+                "n": 2,
+                "median": 36.93217634009089,
+                "min": 31.842523778028742,
+                "max": 42.02182890215305
+              },
+              "v2Better": 2,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "completedRps": {
+              "direction": "higher",
+              "v2OverV1": {
+                "n": 2,
+                "median": 1.632212482067009,
+                "min": 1.5879501178521114,
+                "max": 1.6764748462819068
+              },
+              "improvementPercent": {
+                "n": 2,
+                "median": 63.221248206700906,
+                "min": 58.79501178521114,
+                "max": 67.64748462819068
+              },
+              "v2Better": 2,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "successfulRps": {
+              "direction": "higher",
+              "v2OverV1": {
+                "n": 2,
+                "median": 1.632212482067009,
+                "min": 1.5879501178521114,
+                "max": 1.6764748462819068
+              },
+              "improvementPercent": {
+                "n": 2,
+                "median": 63.221248206700906,
+                "min": 58.79501178521114,
+                "max": 67.64748462819068
+              },
+              "v2Better": 2,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "acquireMeanMs": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 2,
+                "median": 0.9842067020506284,
+                "min": 0.9415231739568846,
+                "max": 1.0268902301443723
+              },
+              "improvementPercent": {
+                "n": 2,
+                "median": 1.5793297949371565,
+                "min": -2.6890230144372307,
+                "max": 5.847682604311544
+              },
+              "v2Better": 1,
+              "v1Better": 1,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "acquireP95Ms": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 2,
+                "median": 0.999399777085195,
+                "min": 0.9993013983105965,
+                "max": 0.9994981558597935
+              },
+              "improvementPercent": {
+                "n": 2,
+                "median": 0.06002229148049931,
+                "min": 0.05018441402064866,
+                "max": 0.06986016894034996
+              },
+              "v2Better": 2,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "usageMeanMs": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 2,
+                "median": 0.4026803590430137,
+                "min": 0.3761605263082177,
+                "max": 0.42920019177780966
+              },
+              "improvementPercent": {
+                "n": 2,
+                "median": 59.73196409569863,
+                "min": 57.079980822219035,
+                "max": 62.38394736917823
+              },
+              "v2Better": 2,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "usageP95Ms": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 2,
+                "median": 0.48650771109583424,
+                "min": 0.47795860112948585,
+                "max": 0.4950568210621827
+              },
+              "improvementPercent": {
+                "n": 2,
+                "median": 51.349228890416576,
+                "min": 50.49431789378174,
+                "max": 52.20413988705141
+              },
+              "v2Better": 2,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "sampledMaxPending": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "improvementPercent": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "v2Better": 0,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 2
+            },
+            "timeoutCount": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "improvementPercent": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "v2Better": 0,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 2
+            }
+          }
+        },
+        "v2": {
+          "pairs": 3,
+          "metrics": {
+            "httpP95Ms": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 3,
+                "median": 0.6496927637365235,
+                "min": 0.4648744097615206,
+                "max": 0.8268300853014209
+              },
+              "improvementPercent": {
+                "n": 3,
+                "median": 35.03072362634765,
+                "min": 17.31699146985791,
+                "max": 53.51255902384794
+              },
+              "v2Better": 3,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "httpP99Ms": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 3,
+                "median": 0.8984269064664201,
+                "min": 0.4017357202718092,
+                "max": 1.0216145749280405
+              },
+              "improvementPercent": {
+                "n": 3,
+                "median": 10.157309353357991,
+                "min": -2.161457492804053,
+                "max": 59.826427972819076
+              },
+              "v2Better": 2,
+              "v1Better": 1,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "completedRps": {
+              "direction": "higher",
+              "v2OverV1": {
+                "n": 3,
+                "median": 1.445643861404484,
+                "min": 1.225459205870302,
+                "max": 1.7858647378484402
+              },
+              "improvementPercent": {
+                "n": 3,
+                "median": 44.5643861404484,
+                "min": 22.5459205870302,
+                "max": 78.58647378484403
+              },
+              "v2Better": 3,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "successfulRps": {
+              "direction": "higher",
+              "v2OverV1": {
+                "n": 3,
+                "median": 1.445643861404484,
+                "min": 1.225459205870302,
+                "max": 1.7858647378484402
+              },
+              "improvementPercent": {
+                "n": 3,
+                "median": 44.5643861404484,
+                "min": 22.5459205870302,
+                "max": 78.58647378484403
+              },
+              "v2Better": 3,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "acquireMeanMs": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 3,
+                "median": 1.0396479603940239,
+                "min": 0.6379779332260865,
+                "max": 1.1412722574543945
+              },
+              "improvementPercent": {
+                "n": 3,
+                "median": -3.964796039402385,
+                "min": -14.127225745439453,
+                "max": 36.202206677391345
+              },
+              "v2Better": 1,
+              "v1Better": 2,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "acquireP95Ms": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 3,
+                "median": 0.9999327818339138,
+                "min": 0.9977601825674847,
+                "max": 1.0001783219748002
+              },
+              "improvementPercent": {
+                "n": 3,
+                "median": 0.0067218166086235875,
+                "min": -0.01783219748001663,
+                "max": 0.22398174325153342
+              },
+              "v2Better": 2,
+              "v1Better": 1,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "usageMeanMs": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 3,
+                "median": 0.5063008172069984,
+                "min": 0.3718697285012323,
+                "max": 0.6271038291272212
+              },
+              "improvementPercent": {
+                "n": 3,
+                "median": 49.369918279300165,
+                "min": 37.28961708727788,
+                "max": 62.813027149876774
+              },
+              "v2Better": 3,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "usageP95Ms": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 3,
+                "median": 0.6154856024857807,
+                "min": 0.4280191790188108,
+                "max": 0.6680334820947351
+              },
+              "improvementPercent": {
+                "n": 3,
+                "median": 38.45143975142194,
+                "min": 33.19665179052649,
+                "max": 57.19808209811892
+              },
+              "v2Better": 3,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "sampledMaxPending": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "improvementPercent": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "v2Better": 0,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 3
+            },
+            "timeoutCount": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "improvementPercent": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "v2Better": 0,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 3
+            }
+          }
+        },
+        "unknown": {
+          "pairs": 0,
+          "metrics": {
+            "httpP95Ms": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "improvementPercent": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "v2Better": 0,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "httpP99Ms": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "improvementPercent": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "v2Better": 0,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "completedRps": {
+              "direction": "higher",
+              "v2OverV1": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "improvementPercent": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "v2Better": 0,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "successfulRps": {
+              "direction": "higher",
+              "v2OverV1": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "improvementPercent": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "v2Better": 0,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "acquireMeanMs": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "improvementPercent": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "v2Better": 0,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "acquireP95Ms": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "improvementPercent": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "v2Better": 0,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "usageMeanMs": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "improvementPercent": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "v2Better": 0,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "usageP95Ms": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "improvementPercent": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "v2Better": 0,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "sampledMaxPending": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "improvementPercent": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "v2Better": 0,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "timeoutCount": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "improvementPercent": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "v2Better": 0,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            }
+          }
+        }
+      },
+      "firstRepeatDrift": {
+        "firstRepeatWasClean": true,
+        "byStrategy": {
+          "v1": {
+            "laterCleanRuns": 4,
+            "firstOverLaterMedian": {
+              "httpP95Ms": 0.9321698627309554,
+              "httpP99Ms": 1.0056986631937406,
+              "completedRps": 1.060692988117325,
+              "successfulRps": 1.060692988117325,
+              "acquireMeanMs": 1.0851361438968385,
+              "acquireP95Ms": 0.9995600885360025,
+              "usageMeanMs": 0.9263891043686142,
+              "usageP95Ms": 0.7899911429064108,
+              "sampledMaxPending": null,
+              "timeoutCount": null
+            }
+          },
+          "v2": {
+            "laterCleanRuns": 4,
+            "firstOverLaterMedian": {
+              "httpP95Ms": 1.2762612192866978,
+              "httpP99Ms": 1.4553072274670067,
+              "completedRps": 0.8243546057040162,
+              "successfulRps": 0.8243546057040162,
+              "acquireMeanMs": 1.2904577466830016,
+              "acquireP95Ms": 1.0004047086076318,
+              "usageMeanMs": 1.3449847033234588,
+              "usageP95Ms": 1.077268375400934,
+              "sampledMaxPending": null,
+              "timeoutCount": null
+            }
+          }
+        }
+      }
+    },
+    {
+      "poolSize": 10,
+      "model": "closed",
+      "vus": 20,
+      "rate": null,
+      "cleanPairs": 5,
+      "pairedRunMetrics": {
+        "v1": {
+          "httpP95Ms": {
+            "n": 5,
+            "median": 67.28587579999999,
+            "min": 64.6850169,
+            "max": 81.40664299999999
+          },
+          "httpP99Ms": {
+            "n": 5,
+            "median": 84.15129707999999,
+            "min": 80.15782000000013,
+            "max": 153.49639428
+          },
+          "completedRps": {
+            "n": 5,
+            "median": 639.0794644641311,
+            "min": 505.491214057508,
+            "max": 664.6818136455873
+          },
+          "successfulRps": {
+            "n": 5,
+            "median": 639.0794644641311,
+            "min": 505.491214057508,
+            "max": 664.6818136455873
+          },
+          "acquireMeanMs": {
+            "n": 5,
+            "median": 5.59424468309969,
+            "min": 5.116495530905412,
+            "max": 6.4336298112449795
+          },
+          "acquireP95Ms": {
+            "n": 5,
+            "median": 30.621787293674725,
+            "min": 26.890240276315794,
+            "max": 32.571250120967726
+          },
+          "usageMeanMs": {
+            "n": 5,
+            "median": 13.606545416644952,
+            "min": 13.117912016415614,
+            "max": 16.90809138192113
+          },
+          "usageP95Ms": {
+            "n": 5,
+            "median": 45.5884938684829,
+            "min": 45.07448544607843,
+            "max": 52.318359624999985
+          },
+          "sampledMaxPending": {
+            "n": 5,
+            "median": 10,
+            "min": 8,
+            "max": 10
+          },
+          "timeoutCount": {
+            "n": 5,
+            "median": 0,
+            "min": 0,
+            "max": 0
+          }
+        },
+        "v2": {
+          "httpP95Ms": {
+            "n": 5,
+            "median": 47.5241038,
+            "min": 44.08896760000001,
+            "max": 50.06482099999999
+          },
+          "httpP99Ms": {
+            "n": 5,
+            "median": 60.43733794,
+            "min": 57.38645504000003,
+            "max": 72.03193783999994
+          },
+          "completedRps": {
+            "n": 5,
+            "median": 1382.3029495084152,
+            "min": 1063.3497733937616,
+            "max": 1409.484769712724
+          },
+          "successfulRps": {
+            "n": 5,
+            "median": 1382.3029495084152,
+            "min": 1063.3497733937616,
+            "max": 1409.484769712724
+          },
+          "acquireMeanMs": {
+            "n": 5,
+            "median": 0.9313721643970512,
+            "min": 0.8814114301893934,
+            "max": 1.0801748199011956
+          },
+          "acquireP95Ms": {
+            "n": 5,
+            "median": 3.561396957547172,
+            "min": 3.358389447085888,
+            "max": 3.9699207309803866
+          },
+          "usageMeanMs": {
+            "n": 5,
+            "median": 4.777376858623525,
+            "min": 4.637481379897379,
+            "max": 5.731141684164342
+          },
+          "usageP95Ms": {
+            "n": 5,
+            "median": 23.90572795196076,
+            "min": 23.37077545612233,
+            "max": 30.620617635393252
+          },
+          "sampledMaxPending": {
+            "n": 5,
+            "median": 8,
+            "min": 6,
+            "max": 10
+          },
+          "timeoutCount": {
+            "n": 5,
+            "median": 0,
+            "min": 0,
+            "max": 0
+          }
+        }
+      },
+      "pairedRunResources": {
+        "v1": {
+          "serverCpuMedianPercent": {
+            "n": 5,
+            "median": 201.94,
+            "min": 201.34,
+            "max": 211.64
+          },
+          "serverCpuMaxPercent": {
+            "n": 5,
+            "median": 212.89,
+            "min": 206.13,
+            "max": 248.24
+          },
+          "dbCpuMedianPercent": {
+            "n": 5,
+            "median": 157.495,
+            "min": 157.04000000000002,
+            "max": 158.075
+          },
+          "dbCpuMaxPercent": {
+            "n": 5,
+            "median": 175.11,
+            "min": 168.6,
+            "max": 179.1
+          },
+          "loadCpuMedianPercent": {
+            "n": 5,
+            "median": 83.55,
+            "min": 82.655,
+            "max": 86.57
+          },
+          "loadCpuMaxPercent": {
+            "n": 5,
+            "median": 96.57,
+            "min": 88.13,
+            "max": 98
+          },
+          "gcPauseSecondsApprox": {
+            "n": 5,
+            "median": 2.618000000000002,
+            "min": 2.5320000000000005,
+            "max": 2.686
+          },
+          "gcPauseCountApprox": {
+            "n": 5,
+            "median": 667,
+            "min": 556,
+            "max": 692
+          },
+          "allocatedBytesApprox": {
+            "n": 5,
+            "median": 47821475224,
+            "min": 39863177832,
+            "max": 49613872696
+          }
+        },
+        "v2": {
+          "serverCpuMedianPercent": {
+            "n": 5,
+            "median": 203.34,
+            "min": 202.32,
+            "max": 210.365
+          },
+          "serverCpuMaxPercent": {
+            "n": 5,
+            "median": 214.95,
+            "min": 206.83,
+            "max": 309.58
+          },
+          "dbCpuMedianPercent": {
+            "n": 5,
+            "median": 92.4,
+            "min": 86.57,
+            "max": 96.555
+          },
+          "dbCpuMaxPercent": {
+            "n": 5,
+            "median": 101.72,
+            "min": 91.62,
+            "max": 127.92
+          },
+          "loadCpuMedianPercent": {
+            "n": 5,
+            "median": 138.88,
+            "min": 137.62,
+            "max": 154.765
+          },
+          "loadCpuMaxPercent": {
+            "n": 5,
+            "median": 152.53,
+            "min": 149.32,
+            "max": 218.8
+          },
+          "gcPauseSecondsApprox": {
+            "n": 5,
+            "median": 0.3990000000000009,
+            "min": 0.3150000000000004,
+            "max": 0.4250000000000007
+          },
+          "gcPauseCountApprox": {
+            "n": 5,
+            "median": 152,
+            "min": 101,
+            "max": 161
+          },
+          "allocatedBytesApprox": {
+            "n": 5,
+            "median": 10897849088,
+            "min": 7241270120,
+            "max": 11543117680
+          }
+        }
+      },
+      "pairedEffects": {
+        "httpP95Ms": {
+          "direction": "lower",
+          "v2OverV1": {
+            "n": 5,
+            "median": 0.6921310262663585,
+            "min": 0.6149967515550296,
+            "max": 0.7347003383097207
+          },
+          "improvementPercent": {
+            "n": 5,
+            "median": 30.78689737336415,
+            "min": 26.52996616902793,
+            "max": 38.50032484449704
+          },
+          "v2Better": 5,
+          "v1Better": 0,
+          "equal": 0,
+          "unavailable": 0
+        },
+        "httpP99Ms": {
+          "direction": "lower",
+          "v2OverV1": {
+            "n": 5,
+            "median": 0.7115270217906169,
+            "min": 0.4692744619694655,
+            "max": 0.7539793115631126
+          },
+          "improvementPercent": {
+            "n": 5,
+            "median": 28.847297820938312,
+            "min": 24.60206884368874,
+            "max": 53.072553803053445
+          },
+          "v2Better": 5,
+          "v1Better": 0,
+          "equal": 0,
+          "unavailable": 0
+        },
+        "completedRps": {
+          "direction": "higher",
+          "v2OverV1": {
+            "n": 5,
+            "median": 2.120540596683559,
+            "min": 2.0896253048780435,
+            "max": 2.205331253936771
+          },
+          "improvementPercent": {
+            "n": 5,
+            "median": 112.0540596683559,
+            "min": 108.96253048780436,
+            "max": 120.53312539367708
+          },
+          "v2Better": 5,
+          "v1Better": 0,
+          "equal": 0,
+          "unavailable": 0
+        },
+        "successfulRps": {
+          "direction": "higher",
+          "v2OverV1": {
+            "n": 5,
+            "median": 2.120540596683559,
+            "min": 2.0896253048780435,
+            "max": 2.205331253936771
+          },
+          "improvementPercent": {
+            "n": 5,
+            "median": 112.0540596683559,
+            "min": 108.96253048780436,
+            "max": 120.53312539367708
+          },
+          "v2Better": 5,
+          "v1Better": 0,
+          "equal": 0,
+          "unavailable": 0
+        },
+        "acquireMeanMs": {
+          "direction": "lower",
+          "v2OverV1": {
+            "n": 5,
+            "median": 0.16398939704354146,
+            "min": 0.13891891259832828,
+            "max": 0.21111614646715982
+          },
+          "improvementPercent": {
+            "n": 5,
+            "median": 83.60106029564585,
+            "min": 78.88838535328402,
+            "max": 86.10810874016717
+          },
+          "v2Better": 5,
+          "v1Better": 0,
+          "equal": 0,
+          "unavailable": 0
+        },
+        "acquireP95Ms": {
+          "direction": "lower",
+          "v2OverV1": {
+            "n": 5,
+            "median": 0.1099695662965525,
+            "min": 0.10934173371670879,
+            "max": 0.1476342602441149
+          },
+          "improvementPercent": {
+            "n": 5,
+            "median": 89.00304337034474,
+            "min": 85.2365739755885,
+            "max": 89.06582662832912
+          },
+          "v2Better": 5,
+          "v1Better": 0,
+          "equal": 0,
+          "unavailable": 0
+        },
+        "usageMeanMs": {
+          "direction": "lower",
+          "v2OverV1": {
+            "n": 5,
+            "median": 0.35352283001243523,
+            "min": 0.33684647612877483,
+            "max": 0.3635188497139809
+          },
+          "improvementPercent": {
+            "n": 5,
+            "median": 64.64771699875648,
+            "min": 63.64811502860191,
+            "max": 66.31535238712252
+          },
+          "v2Better": 5,
+          "v1Better": 0,
+          "equal": 0,
+          "unavailable": 0
+        },
+        "usageP95Ms": {
+          "direction": "lower",
+          "v2OverV1": {
+            "n": 5,
+            "median": 0.5248537416948045,
+            "min": 0.5032043336291327,
+            "max": 0.5852748032406083
+          },
+          "improvementPercent": {
+            "n": 5,
+            "median": 47.51462583051955,
+            "min": 41.47251967593917,
+            "max": 49.67956663708672
+          },
+          "v2Better": 5,
+          "v1Better": 0,
+          "equal": 0,
+          "unavailable": 0
+        },
+        "sampledMaxPending": {
+          "direction": "lower",
+          "v2OverV1": {
+            "n": 5,
+            "median": 0.9,
+            "min": 0.6,
+            "max": 1
+          },
+          "improvementPercent": {
+            "n": 5,
+            "median": 9.999999999999998,
+            "min": 0,
+            "max": 40
+          },
+          "v2Better": 3,
+          "v1Better": 0,
+          "equal": 2,
+          "unavailable": 0
+        },
+        "timeoutCount": {
+          "direction": "lower",
+          "v2OverV1": {
+            "n": 0,
+            "median": null,
+            "min": null,
+            "max": null
+          },
+          "improvementPercent": {
+            "n": 0,
+            "median": null,
+            "min": null,
+            "max": null
+          },
+          "v2Better": 0,
+          "v1Better": 0,
+          "equal": 0,
+          "unavailable": 5
+        }
+      },
+      "orderSubgroups": {
+        "v1": {
+          "pairs": 3,
+          "metrics": {
+            "httpP95Ms": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 3,
+                "median": 0.7120815599163235,
+                "min": 0.6747610338829954,
+                "max": 0.7347003383097207
+              },
+              "improvementPercent": {
+                "n": 3,
+                "median": 28.79184400836765,
+                "min": 26.52996616902793,
+                "max": 32.523896611700465
+              },
+              "v2Better": 3,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "httpP99Ms": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 3,
+                "median": 0.7249208800625542,
+                "min": 0.7115270217906169,
+                "max": 0.7539793115631126
+              },
+              "improvementPercent": {
+                "n": 3,
+                "median": 27.50791199374458,
+                "min": 24.60206884368874,
+                "max": 28.847297820938312
+              },
+              "v2Better": 3,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "completedRps": {
+              "direction": "higher",
+              "v2OverV1": {
+                "n": 3,
+                "median": 2.120540596683559,
+                "min": 2.0896253048780435,
+                "max": 2.205331253936771
+              },
+              "improvementPercent": {
+                "n": 3,
+                "median": 112.0540596683559,
+                "min": 108.96253048780436,
+                "max": 120.53312539367708
+              },
+              "v2Better": 3,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "successfulRps": {
+              "direction": "higher",
+              "v2OverV1": {
+                "n": 3,
+                "median": 2.120540596683559,
+                "min": 2.0896253048780435,
+                "max": 2.205331253936771
+              },
+              "improvementPercent": {
+                "n": 3,
+                "median": 112.0540596683559,
+                "min": 108.96253048780436,
+                "max": 120.53312539367708
+              },
+              "v2Better": 3,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "acquireMeanMs": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 3,
+                "median": 0.16398939704354146,
+                "min": 0.16021022012696512,
+                "max": 0.21111614646715982
+              },
+              "improvementPercent": {
+                "n": 3,
+                "median": 83.60106029564585,
+                "min": 78.88838535328402,
+                "max": 83.9789779873035
+              },
+              "v2Better": 3,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "acquireP95Ms": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 3,
+                "median": 0.10967320146527179,
+                "min": 0.10934173371670879,
+                "max": 0.1476342602441149
+              },
+              "improvementPercent": {
+                "n": 3,
+                "median": 89.03267985347281,
+                "min": 85.2365739755885,
+                "max": 89.06582662832912
+              },
+              "v2Better": 3,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "usageMeanMs": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 3,
+                "median": 0.35352283001243523,
+                "min": 0.33684647612877483,
+                "max": 0.3635188497139809
+              },
+              "improvementPercent": {
+                "n": 3,
+                "median": 64.64771699875648,
+                "min": 63.64811502860191,
+                "max": 66.31535238712252
+              },
+              "v2Better": 3,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "usageP95Ms": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 3,
+                "median": 0.518492340507808,
+                "min": 0.5032043336291327,
+                "max": 0.5248537416948045
+              },
+              "improvementPercent": {
+                "n": 3,
+                "median": 48.1507659492192,
+                "min": 47.51462583051955,
+                "max": 49.67956663708672
+              },
+              "v2Better": 3,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "sampledMaxPending": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 3,
+                "median": 0.9,
+                "min": 0.7,
+                "max": 1
+              },
+              "improvementPercent": {
+                "n": 3,
+                "median": 9.999999999999998,
+                "min": 0,
+                "max": 30.000000000000004
+              },
+              "v2Better": 2,
+              "v1Better": 0,
+              "equal": 1,
+              "unavailable": 0
+            },
+            "timeoutCount": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "improvementPercent": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "v2Better": 0,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 3
+            }
+          }
+        },
+        "v2": {
+          "pairs": 2,
+          "metrics": {
+            "httpP95Ms": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 2,
+                "median": 0.6535638889106941,
+                "min": 0.6149967515550296,
+                "max": 0.6921310262663585
+              },
+              "improvementPercent": {
+                "n": 2,
+                "median": 34.64361110893059,
+                "min": 30.78689737336415,
+                "max": 38.50032484449704
+              },
+              "v2Better": 2,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "httpP99Ms": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 2,
+                "median": 0.5868684401700351,
+                "min": 0.4692744619694655,
+                "max": 0.7044624183706047
+              },
+              "improvementPercent": {
+                "n": 2,
+                "median": 41.313155982996484,
+                "min": 29.553758162939523,
+                "max": 53.072553803053445
+              },
+              "v2Better": 2,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "completedRps": {
+              "direction": "higher",
+              "v2OverV1": {
+                "n": 2,
+                "median": 2.1332781836239274,
+                "min": 2.1035969445609157,
+                "max": 2.162959422686939
+              },
+              "improvementPercent": {
+                "n": 2,
+                "median": 113.32781836239275,
+                "min": 110.35969445609157,
+                "max": 116.2959422686939
+              },
+              "v2Better": 2,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "successfulRps": {
+              "direction": "higher",
+              "v2OverV1": {
+                "n": 2,
+                "median": 2.1332781836239274,
+                "min": 2.1035969445609157,
+                "max": 2.162959422686939
+              },
+              "improvementPercent": {
+                "n": 2,
+                "median": 113.32781836239275,
+                "min": 110.35969445609157,
+                "max": 116.2959422686939
+              },
+              "v2Better": 2,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "acquireMeanMs": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 2,
+                "median": 0.16128507363221328,
+                "min": 0.13891891259832828,
+                "max": 0.1836512346660983
+              },
+              "improvementPercent": {
+                "n": 2,
+                "median": 83.87149263677867,
+                "min": 81.63487653339017,
+                "max": 86.10810874016717
+              },
+              "v2Better": 2,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "acquireP95Ms": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 2,
+                "median": 0.11838895776898167,
+                "min": 0.1099695662965525,
+                "max": 0.12680834924141085
+              },
+              "improvementPercent": {
+                "n": 2,
+                "median": 88.16110422310183,
+                "min": 87.31916507585892,
+                "max": 89.00304337034474
+              },
+              "v2Better": 2,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "usageMeanMs": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 2,
+                "median": 0.34667846814640435,
+                "min": 0.33895852315373276,
+                "max": 0.3543984131390759
+              },
+              "improvementPercent": {
+                "n": 2,
+                "median": 65.33215318535957,
+                "min": 64.56015868609242,
+                "max": 66.10414768462672
+              },
+              "v2Better": 2,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "usageP95Ms": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 2,
+                "median": 0.5711894321138937,
+                "min": 0.5571040609871792,
+                "max": 0.5852748032406083
+              },
+              "improvementPercent": {
+                "n": 2,
+                "median": 42.88105678861062,
+                "min": 41.47251967593917,
+                "max": 44.289593901282075
+              },
+              "v2Better": 2,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "sampledMaxPending": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 2,
+                "median": 0.8,
+                "min": 0.6,
+                "max": 1
+              },
+              "improvementPercent": {
+                "n": 2,
+                "median": 20,
+                "min": 0,
+                "max": 40
+              },
+              "v2Better": 1,
+              "v1Better": 0,
+              "equal": 1,
+              "unavailable": 0
+            },
+            "timeoutCount": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "improvementPercent": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "v2Better": 0,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 2
+            }
+          }
+        },
+        "unknown": {
+          "pairs": 0,
+          "metrics": {
+            "httpP95Ms": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "improvementPercent": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "v2Better": 0,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "httpP99Ms": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "improvementPercent": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "v2Better": 0,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "completedRps": {
+              "direction": "higher",
+              "v2OverV1": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "improvementPercent": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "v2Better": 0,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "successfulRps": {
+              "direction": "higher",
+              "v2OverV1": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "improvementPercent": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "v2Better": 0,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "acquireMeanMs": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "improvementPercent": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "v2Better": 0,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "acquireP95Ms": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "improvementPercent": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "v2Better": 0,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "usageMeanMs": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "improvementPercent": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "v2Better": 0,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "usageP95Ms": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "improvementPercent": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "v2Better": 0,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "sampledMaxPending": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "improvementPercent": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "v2Better": 0,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            },
+            "timeoutCount": {
+              "direction": "lower",
+              "v2OverV1": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "improvementPercent": {
+                "n": 0,
+                "median": null,
+                "min": null,
+                "max": null
+              },
+              "v2Better": 0,
+              "v1Better": 0,
+              "equal": 0,
+              "unavailable": 0
+            }
+          }
+        }
+      },
+      "firstRepeatDrift": {
+        "firstRepeatWasClean": true,
+        "byStrategy": {
+          "v1": {
+            "laterCleanRuns": 4,
+            "firstOverLaterMedian": {
+              "httpP95Ms": 1.010965893030022,
+              "httpP99Ms": 1.040425423035993,
+              "completedRps": 0.9697465106813363,
+              "successfulRps": 0.9697465106813363,
+              "acquireMeanMs": 1.0237110348365592,
+              "acquireP95Ms": 1.0755600493901025,
+              "usageMeanMs": 1.0335907539770286,
+              "usageP95Ms": 1.021075734311227,
+              "sampledMaxPending": 1,
+              "timeoutCount": null
+            }
+          },
+          "v2": {
+            "laterCleanRuns": 4,
+            "firstOverLaterMedian": {
+              "httpP95Ms": 1.014771585238351,
+              "httpP99Ms": 1.0382612233010555,
+              "completedRps": 1.0060557046351124,
+              "successfulRps": 1.0060557046351124,
+              "acquireMeanMs": 0.9696022223313477,
+              "acquireP95Ms": 0.9695468864333239,
+              "usageMeanMs": 0.9701347168142347,
+              "usageP95Ms": 0.9497650074338277,
+              "sampledMaxPending": 1.2,
+              "timeoutCount": null
+            }
+          }
+        }
+      }
+    }
+  ],
+  "failures": [
+    {
+      "sequence": 8,
+      "poolSize": 2,
+      "condition": "arrival-rate-150",
+      "repeat": 1,
+      "strategy": "v2",
+      "reportStatus": "load_failed",
+      "measurementValid": true,
+      "requests": {
+        "started": 4447,
+        "completed": 4447,
+        "successful": 4446,
+        "incomplete": 0,
+        "dropped": 53,
+        "httpErrorRate": 0.00022487069934787497,
+        "contractErrorRate": 0.00022487069934787497
+      },
+      "metrics": {
+        "httpP95Ms": 41.38904639999993,
+        "httpP99Ms": 549.1205398999994,
+        "completedRps": 148.25804300716786,
+        "successfulRps": 148.2247041173529,
+        "acquireMeanMs": 10.119248273442762,
+        "acquireP95Ms": 11.913818807142784,
+        "usageMeanMs": 2.1412505623031897,
+        "usageP95Ms": 2.991636625,
+        "sampledMaxPending": 52,
+        "timeoutCount": 1
+      },
+      "resources": {
+        "sampleCount": 6,
+        "samplesWithErrors": 0,
+        "counterReset": false,
+        "metrics": {
+          "serverCpuMedianPercent": 23.6,
+          "serverCpuMaxPercent": 27.29,
+          "dbCpuMedianPercent": 11.785,
+          "dbCpuMaxPercent": 15.96,
+          "loadCpuMedianPercent": 22.775,
+          "loadCpuMaxPercent": 93.73,
+          "gcPauseSecondsApprox": 0.03299999999999992,
+          "gcPauseCountApprox": 15,
+          "allocatedBytesApprox": 1075380176
+        },
+        "note": "CPU values are sampled Docker percentages (100%=one core). GC/allocation deltas use first/last available in-window JVM samples and omit window edges; they are approximate, not exact run totals."
+      }
+    },
+    {
+      "sequence": 39,
+      "poolSize": 10,
+      "condition": "arrival-rate-150",
+      "repeat": 1,
+      "strategy": "v2",
+      "reportStatus": "load_failed",
+      "measurementValid": true,
+      "requests": {
+        "started": 4474,
+        "completed": 4474,
+        "successful": 4474,
+        "incomplete": 0,
+        "dropped": 27,
+        "httpErrorRate": 0,
+        "contractErrorRate": 0
+      },
+      "metrics": {
+        "httpP95Ms": 5.407271499999941,
+        "httpP99Ms": 400.5228109499981,
+        "completedRps": 149.23779979318857,
+        "successfulRps": 149.23779979318857,
+        "acquireMeanMs": 0.2658736008046517,
+        "acquireP95Ms": 0.009677367941712206,
+        "usageMeanMs": 1.9803308001788142,
+        "usageP95Ms": 2.9415951272189353,
+        "sampledMaxPending": 6,
+        "timeoutCount": 0
+      },
+      "resources": {
+        "sampleCount": 6,
+        "samplesWithErrors": 0,
+        "counterReset": false,
+        "metrics": {
+          "serverCpuMedianPercent": 24.075000000000003,
+          "serverCpuMaxPercent": 27.48,
+          "dbCpuMedianPercent": 12.940000000000001,
+          "dbCpuMaxPercent": 15.06,
+          "loadCpuMedianPercent": 20.604999999999997,
+          "loadCpuMaxPercent": 51.54,
+          "gcPauseSecondsApprox": 0.12899999999999956,
+          "gcPauseCountApprox": 14,
+          "allocatedBytesApprox": 1003749376
+        },
+        "note": "CPU values are sampled Docker percentages (100%=one core). GC/allocation deltas use first/last available in-window JVM samples and omit window edges; they are approximate, not exact run totals."
+      }
+    },
+    {
+      "sequence": 40,
+      "poolSize": 10,
+      "condition": "arrival-rate-150",
+      "repeat": 1,
+      "strategy": "v1",
+      "reportStatus": "load_failed",
+      "measurementValid": true,
+      "requests": {
+        "started": 4477,
+        "completed": 4477,
+        "successful": 4477,
+        "incomplete": 0,
+        "dropped": 24,
+        "httpErrorRate": 0,
+        "contractErrorRate": 0
+      },
+      "metrics": {
+        "httpP95Ms": 14.334437199999991,
+        "httpP99Ms": 342.46866303999906,
+        "completedRps": 149.23830794359813,
+        "successfulRps": 149.23830794359813,
+        "acquireMeanMs": 4.437750870672322,
+        "acquireP95Ms": 0.009752694336161431,
+        "usageMeanMs": 5.227384409202596,
+        "usageP95Ms": 8.7141648042857,
+        "sampledMaxPending": 48,
+        "timeoutCount": 0
+      },
+      "resources": {
+        "sampleCount": 6,
+        "samplesWithErrors": 1,
+        "counterReset": false,
+        "metrics": {
+          "serverCpuMedianPercent": 42.795,
+          "serverCpuMaxPercent": 57.3,
+          "dbCpuMedianPercent": 25.25,
+          "dbCpuMaxPercent": 30.35,
+          "loadCpuMedianPercent": 20.04,
+          "loadCpuMaxPercent": 22.02,
+          "gcPauseSecondsApprox": 0.3120000000000003,
+          "gcPauseCountApprox": 158,
+          "allocatedBytesApprox": 11328000632
+        },
+        "note": "CPU values are sampled Docker percentages (100%=one core). GC/allocation deltas use first/last available in-window JVM samples and omit window edges; they are approximate, not exact run totals."
+      }
+    }
+  ]
+}

@@ -133,6 +133,8 @@ node benchmarks/compare.mjs --ids 1,2,3,4,5,6,7,8,9,10 --warmup 10 --repeats 30
 
 풀 크기와 동시 요청 수를 교차하고 Hikari 획득·점유 시간까지 함께 수집하려면 [동시 요청·커넥션 풀 실험](docs/CONCURRENCY.md)을 참고하세요. `benchmarks/pool-run.mjs`는 한 조건의 결과를, `benchmarks/pool-matrix.ps1`는 풀·VU별 결과를 저장합니다. 같은 목표 RPS 비교를 위한 고정 도착률 모드도 지원합니다.
 
+[30초·5쌍 반복 측정 결과](docs/REPEATED_STUDY.md)에는 풀 2/10개, 동시 요청 1/20개 및 150 req/s의 총 60회 결과와 실패 내역을 정리했습니다. `benchmarks/repeat-study.ps1`로 재현하고 `benchmarks/analyze-study.mjs`로 같은 반복 쌍을 분석할 수 있습니다.
+
 ```powershell
 docker compose run --rm -e STRATEGY=v1 -e VUS=5 -e DURATION=30s k6
 docker compose run --rm -e STRATEGY=v2 -e VUS=5 -e DURATION=30s k6
