@@ -69,14 +69,18 @@ export default function () {
       && result.metrics.queries.every((query) => query.sql == null || query.sql === ''),
   }, { phase: 'measure' });
   contractErrors.add(!valid);
+  // Keep finite row observations even when a campaign invariant fails. A failed
+  // response must not disappear from the evidence needed to diagnose the mismatch.
+  if (Number.isFinite(result?.metrics?.totalRows)) returnedRows.add(result.metrics.totalRows);
+  if (Number.isFinite(result?.metrics?.queryCount)) queryCount.add(result.metrics.queryCount);
+  if (Array.isArray(result?.metrics?.queries)) result.metrics.queries.forEach((query, index) => {
+    if (Number.isFinite(query.rows)) queryRows[index]?.add(query.rows);
+  });
   if (!valid) return;
   measuredSuccesses.add(1);
   fetchAndAssembleMs.add(result.metrics.fetchAndAssembleMs);
   jdbcExecuteMs.add(result.metrics.jdbcExecuteMs);
   assemblyMs.add(result.metrics.assemblyMs);
-  returnedRows.add(result.metrics.totalRows);
-  queryCount.add(result.metrics.queryCount);
-  result.metrics.queries.forEach((query, index) => queryRows[index]?.add(query.rows));
 }
 
 export function handleSummary(data) {

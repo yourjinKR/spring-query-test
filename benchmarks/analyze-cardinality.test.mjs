@@ -40,7 +40,8 @@ function fixture(specifications, repeats = 1) {
       validation: Object.fromEntries(validations.map((name) => [name, true])) };
   });
   return { campaign: { schemaVersion: 1, experiment: 'cardinality', status: 'completed', completedAt: '2026-10-30T00:00:00Z',
-    parameters: { ids, fixedDataset, repeats, totalMeasuredRuns: points.filter((point) => point.phase === 'measure').length }, points }, reports };
+    parameters: { ids, fixedDataset, repeats, scenarios: [...new Set(points.filter((point) => point.phase === 'measure').map((point) => point.scenario))],
+      totalMeasuredRuns: points.filter((point) => point.phase === 'measure').length }, points }, reports };
 }
 
 test('row formulas include LEFT JOIN empty children and additive split rows', () => {
@@ -151,6 +152,131 @@ test('clock gaps and incomplete campaigns are disclosed; small p99 samples remai
   assert.match(result.warnings.join(), /partial/);
 });
 
+test('completion requires the full declared grid, not a matching count filled by duplicates', () => {
+  const { campaign, reports } = fixture([{ c: 1, a: 1 }, { c: 1, a: 1, strategy: 'v2' },
+    { c: 1, a: 1 }, { c: 1, a: 1, strategy: 'v2' }]);
+  campaign.parameters.scenarios = ['1/1', '5/5'];
+  const result = analyzeCardinality(campaign, reports);
+  assert.equal(result.coverage.expectedMeasuredRuns, result.coverage.measuredRuns);
+  assert.equal(result.coverage.plannedGridValid, true);
+  assert.equal(result.coverage.campaignComplete, false);
+  assert.equal(result.coverage.allPlannedRunsRecorded, false);
+  assert.deepEqual(result.coverage.missingPlannedRuns.map(({ scenario, strategy }) => [scenario, strategy]), [['5/5', 'v1'], ['5/5', 'v2']]);
+  assert.equal(result.coverage.duplicatePlannedRuns.length, 2);
+  assert.match(result.warnings.join(), /planned scenario\/repeat\/strategy runs are missing/);
+});
+
+test('missing or malformed declared scenario/repeat plan cannot be called complete', () => {
+  for (const mutate of [
+    (parameters) => { delete parameters.scenarios; },
+    (parameters) => { parameters.scenarios = []; },
+    (parameters) => { parameters.scenarios = ['20/5', '20/5']; },
+    (parameters) => { parameters.scenarios = ['020/5']; },
+    (parameters) => { parameters.scenarios = ['201/5']; },
+    (parameters) => { parameters.repeats = 0; },
+    (parameters) => { parameters.totalMeasuredRuns = 0; },
+  ]) {
+    const { campaign, reports } = fixture([{ strategy: 'v1' }, { strategy: 'v2' }]);
+    mutate(campaign.parameters);
+    const result = analyzeCardinality(campaign, reports);
+    assert.equal(result.coverage.plannedGridValid, false);
+    assert.equal(result.coverage.campaignComplete, false);
+    assert.match(result.warnings.join(), /\[plan\]/);
+  }
+});
+
+test('out-of-plan repeats, stages and scenario labels remain disclosed', () => {
+  for (const mutate of [
+    (point) => { point.repeat = 2; },
+    (point) => { point.stage = 'sweep'; },
+    (point) => { point.scenario = '100/20'; },
+  ]) {
+    const { campaign, reports } = fixture([{ strategy: 'v1' }, { strategy: 'v2' }]);
+    campaign.parameters.stage = 'confirm'; mutate(campaign.points[0]);
+    const result = analyzeCardinality(campaign, reports);
+    assert.equal(result.coverage.campaignComplete, false);
+    assert.equal(result.coverage.unexpectedRuns.length, 1);
+    assert.equal(result.runs[0].measurementValid, false);
+    assert.equal(result.runs[0].clean, false);
+  }
+});
+
+test('reusing a raw report across repeats invalidates both purported independent executions', () => {
+  const { campaign, reports } = fixture([{ repeat: 1 }, { repeat: 1, strategy: 'v2' },
+    { repeat: 2 }, { repeat: 2, strategy: 'v2' }], 2);
+  campaign.points[2].report = './run-0.json'; reports.set('./run-0.json', reports.get('run-0.json'));
+  const result = analyzeCardinality(campaign, reports);
+  assert.equal(result.coverage.allPlannedRunsRecorded, true);
+  assert.equal(result.coverage.uniqueReportPaths, false);
+  assert.equal(result.coverage.campaignComplete, false);
+  assert.equal(result.coverage.duplicateReports.length, 1);
+  assert.equal(result.runs[0].measurementValid, false);
+  assert.equal(result.runs[2].measurementValid, false);
+  assert.equal(result.groups[0].cleanPairs, 0);
+  assert.match(result.runs[2].measurementIssues.join(), /independent replicates/);
+});
+
+test('a warmup raw report cannot be reused as a measured execution', () => {
+  const { campaign, reports } = fixture([{ phase: 'warmup' }, { strategy: 'v1' }, { strategy: 'v2' }]);
+  campaign.points[1].report = 'run-0.json';
+  const result = analyzeCardinality(campaign, reports);
+  assert.equal(result.coverage.campaignComplete, false);
+  assert.equal(result.coverage.uniqueReportPaths, false);
+  assert.equal(result.runs[0].measurementValid, false);
+});
+
+test('a complete plan with unique execution reports remains complete', () => {
+  const { campaign, reports } = fixture([{ repeat: 1 }, { repeat: 1, strategy: 'v2' },
+    { repeat: 2 }, { repeat: 2, strategy: 'v2' }], 2);
+  campaign.parameters.stage = 'confirm';
+  const result = analyzeCardinality(campaign, reports);
+  assert.equal(result.coverage.plannedGridValid, true);
+  assert.equal(result.coverage.allPlannedRunsRecorded, true);
+  assert.equal(result.coverage.uniqueReportPaths, true);
+  assert.equal(result.coverage.campaignComplete, true);
+  assert.equal(result.groups[0].cleanPairs, 2);
+});
+
+test('optional resource absence keeps HTTP validity and represents unknown values as unavailable', () => {
+  const { campaign, reports } = fixture([{ strategy: 'v1' }, { strategy: 'v2' }]);
+  const result = analyzeCardinality(campaign, reports);
+  assert.equal(result.coverage.cleanRuns, 2);
+  assert.equal(result.runs[0].resources.sampleCount, 0);
+  assert.equal(result.runs[0].resources.metrics.serverCpuMedianPercent, null);
+  assert.equal(result.runs[0].resources.metrics.gcPauseSecondsApprox, null);
+  assert.equal(result.runs[0].resources.sampledHeapUsedBytes.n, 0);
+  assert.equal(result.groups[0].pairedResourceMetrics.v1.sampledHeapUsedBytesMax.median, null);
+});
+
+test('resource summaries isolate each run window/container and invalidate GC deltas after counter reset', () => {
+  const { campaign, reports } = fixture([{ strategy: 'v1' }, { strategy: 'v2' }]);
+  const at = (seconds) => new Date(Date.UTC(2026, 9, 30, 0, 0, seconds)).toISOString();
+  for (const [index, start, end] of [[0, 0, 30], [1, 40, 70]]) {
+    const report = reports.get(`run-${index}.json`);
+    report.poolWindow = { startedAt: at(start), endedAt: at(end) }; report.runner.containerName = `load-${index}`;
+  }
+  const sample = (seconds, cpu, heap, uptime, gc, loadName = 'load-0') => ({ at: at(seconds), errors: [], resources: [
+    { name: 'spring-query-lab-server-1', cpuPercent: cpu }, { name: 'spring-query-lab-db-1', cpuPercent: cpu / 10 },
+    { name: loadName, cpuPercent: 8 }, { name: 'unrelated-load', cpuPercent: 999 }],
+  jvm: { uptimeSeconds: uptime, gcPauseSeconds: gc, gcPauseCount: gc * 10, allocatedBytes: gc * 100, heapUsedBytes: heap } });
+  const samples = [sample(-1, 999, 999, 0, 0), sample(5, 20, 100, 5, 1), sample(25, 40, 200, 25, 3),
+    sample(45, 70, 300, 45, 4, 'load-1'), sample(65, 80, 400, 5, 1, 'load-1')];
+  const result = analyzeCardinality(campaign, reports, samples);
+  const first = result.runs[0].resources; const second = result.runs[1].resources;
+  assert.equal(result.coverage.cleanRuns, 2);
+  assert.equal(first.sampleCount, 2);
+  assert.equal(first.metrics.serverCpuMedianPercent, 30);
+  assert.equal(first.metrics.dbCpuMedianPercent, 3);
+  assert.equal(first.metrics.loadCpuMedianPercent, 8);
+  assert.equal(first.metrics.gcPauseSecondsApprox, 2);
+  assert.deepEqual(first.sampledHeapUsedBytes, { n: 2, median: 150, min: 100, max: 200 });
+  assert.equal(second.counterReset, true);
+  assert.equal(second.metrics.gcPauseSecondsApprox, null);
+  assert.equal(second.metrics.allocatedBytesApprox, null);
+  assert.equal(second.metrics.serverCpuMedianPercent, 75);
+  assert.equal(result.groups[0].pairedResourceMetrics.v2.serverCpuMedianPercent.median, 75);
+});
+
 test('crossover bands describe observed repeat-consistent winners and retain mixed intervals', () => {
   const specifications = [];
   for (const [c, a, differences] of [[1, 1, [1, 2]], [5, 1, [-1, 1]], [5, 5, [-2, -1]]]) for (const [index, difference] of differences.entries()) {
@@ -183,6 +309,11 @@ test('CLI loads BOM/relative reports, writes derived outputs and protects raw re
   await writeFile(join(directory, 'campaign.json'), '\uFEFF' + JSON.stringify(campaign));
   for (const [path, report] of reports) await writeFile(join(directory, path), JSON.stringify(report));
   assert.equal((await loadCardinality(directory)).reports.size, 2);
+  assert.deepEqual((await loadCardinality(directory)).resourceSamples, []);
+  await writeFile(join(directory, 'resources.jsonl'), JSON.stringify({ at: '2026-10-30T00:00:00Z', resources: [], jvm: null }) + '\n{truncated');
+  const withResources = await loadCardinality(directory);
+  assert.equal(withResources.resourceSamples.length, 1);
+  assert.match(withResources.resourceWarnings.join(), /line 2 is invalid/);
   const run = promisify(execFile);
   await run(process.execPath, ['benchmarks/analyze-cardinality.mjs', '--input', directory]);
   assert.equal(JSON.parse(await readFile(join(directory, 'analysis.json'), 'utf8')).coverage.cleanRuns, 2);

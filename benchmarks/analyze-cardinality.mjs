@@ -2,11 +2,14 @@ import { readFile, mkdir, writeFile } from 'node:fs/promises';
 import { dirname, extname, isAbsolute, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { isDeepStrictEqual } from 'node:util';
-import { distribution } from './analyze-study.mjs';
+import { distribution, summarizeResources } from './analyze-study.mjs';
 
 const metricNames = ['httpP50Ms', 'httpP95Ms', 'httpP99Ms', 'completedRps', 'successfulRps',
   'fetchAndAssembleP50Ms', 'fetchAndAssembleP95Ms', 'jdbcExecuteP50Ms', 'jdbcExecuteP95Ms', 'assemblyP50Ms', 'assemblyP95Ms',
   'acquireMeanMs', 'usageMeanMs', 'sampledMaxPending', 'timeoutCount'];
+const resourceMetricNames = ['serverCpuMedianPercent', 'serverCpuMaxPercent', 'dbCpuMedianPercent', 'dbCpuMaxPercent',
+  'loadCpuMedianPercent', 'loadCpuMaxPercent', 'gcPauseSecondsApprox', 'gcPauseCountApprox', 'allocatedBytesApprox',
+  'sampledHeapUsedBytesMedian', 'sampledHeapUsedBytesMin', 'sampledHeapUsedBytesMax'];
 const finite = (value) => Number.isFinite(value) ? value : null;
 const count = (value) => Number.isSafeInteger(value) && value >= 0;
 const canonical = (value) => Array.isArray(value) ? value.map(canonical) : value && typeof value === 'object'
@@ -121,7 +124,8 @@ function normalizeRun(point, loaded, campaign) {
     issue(measurements.successfulRequests > measurements.completedRequests || measurements.completedRequests > measurements.startedRequests
       || measurements.startedRequests - measurements.completedRequests !== measurements.incompleteRequests, 'Request counts are inconsistent');
     if (rows && ['v1', 'v2'].includes(point.strategy)) {
-      // Trend count equals successful responses because only contract-valid responses contribute.
+      // Clean runs have one row observation per success. Failed finite row
+      // observations stay visible and invalidate an apparent clean comparison.
       for (const [name, value] of [['returned_rows', rows[point.strategy]], ['query_count', rows.queries[point.strategy].length],
         ...rows.queries[point.strategy].map((value, index) => [`query_${index + 1}_rows`, value])]) {
         issue(k6Metric(name, 'count') !== measurements.successfulRequests || k6Metric(name, 'min') !== value || k6Metric(name, 'max') !== value,
@@ -197,6 +201,8 @@ function groupRuns(runs, expectedRepeats) {
     recordedRuns: runs.length, recordedPairs: pairs.length, cleanPairs: cleanPairs.length, settingVariantCount: variants.size,
     scanSettings: variants.size === 1 ? { ...runs.find((run) => run.measurementValid).settings, dataset: expectedFixed } : null,
     pairedRunMetrics: { v1: summarize(members.v1), v2: summarize(members.v2) }, pairMetrics: summarizePairs(cleanPairs),
+    pairedResourceMetrics: Object.fromEntries(['v1', 'v2'].map((strategy) => [strategy,
+      Object.fromEntries(resourceMetricNames.map((name) => [name, distribution(members[strategy].map((run) => run.resources.metrics[name]))]))])),
     byFirstStrategy: Object.fromEntries(['v1', 'v2'].map((strategy) => {
       const selected = cleanPairs.filter((pair) => pair.firstStrategy === strategy);
       return [strategy, { pairs: selected.length, metrics: summarizePairs(selected) }];
@@ -238,11 +244,98 @@ export function findCrossovers(groups) {
   });
 }
 
-export function analyzeCardinality(campaign, loadedReports) {
+function auditPlan(campaign, measured) {
+  const scenarios = campaign.parameters?.scenarios;
+  const repeats = campaign.parameters?.repeats;
+  const issues = [];
+  const scenarioValid = (scenario) => {
+    if (typeof scenario !== 'string' || !/^(0|[1-9]\d*)\/(0|[1-9]\d*)$/.test(scenario)) return false;
+    const [comments, attachments] = scenario.split('/').map(Number);
+    return count(comments) && comments <= 200 && count(attachments) && attachments <= 100;
+  };
+  const scenariosValid = Array.isArray(scenarios) && scenarios.length > 0 && scenarios.every(scenarioValid)
+    && new Set(scenarios).size === scenarios.length;
+  const repeatsValid = Number.isInteger(repeats) && repeats >= 1 && repeats <= 10;
+  if (!scenariosValid) issues.push('Plan scenarios must be a nonempty, distinct array of canonical comments/attachments values within supported limits');
+  if (!repeatsValid) issues.push('Plan repeats must be an integer in 1..10');
+  const expected = new Map();
+  const key = (scenario, repeat, strategy) => JSON.stringify([scenario, repeat, strategy]);
+  if (scenariosValid && repeatsValid) for (const scenario of scenarios) for (let repeat = 1; repeat <= repeats; repeat++) {
+    for (const strategy of ['v1', 'v2']) expected.set(key(scenario, repeat, strategy), { scenario, repeat, strategy });
+  }
+  const counts = new Map();
+  const unexpected = [];
+  const invalidPlanPoints = new Set();
+  for (const point of measured) {
+    const scenario = `${point.commentsPerPost}/${point.attachmentsPerPost}`;
+    const identifier = key(scenario, point.repeat, point.strategy);
+    counts.set(identifier, (counts.get(identifier) ?? 0) + 1);
+    if (!expected.has(identifier) || (campaign.parameters?.stage != null && point.stage !== campaign.parameters.stage)
+      || point.scenario !== scenario) {
+      unexpected.push({ scenario, repeat: point.repeat, strategy: point.strategy, sequence: point.sequence, report: point.report });
+      invalidPlanPoints.add(point);
+    }
+  }
+  const missing = [...expected].filter(([identifier]) => !counts.has(identifier)).map(([, condition]) => condition);
+  const duplicates = [...counts].filter(([, value]) => value > 1).map(([identifier, recorded]) => ({
+    ...Object.fromEntries(['scenario', 'repeat', 'strategy'].map((name, index) => [name, JSON.parse(identifier)[index]])), recorded,
+  }));
+  const normalizePath = (path) => process.platform === 'win32' ? resolve(path).toLowerCase() : resolve(path);
+  const paths = new Map();
+  for (const point of campaign.points) {
+    if (typeof point.report !== 'string' || !point.report) continue;
+    const path = normalizePath(point.report);
+    if (!paths.has(path)) paths.set(path, []);
+    paths.get(path).push({ sequence: point.sequence, phase: point.phase, report: point.report });
+  }
+  const duplicateReports = [...paths].filter(([, references]) => references.length > 1)
+    .map(([path, references]) => ({ path, references }));
+  const duplicateReportPaths = new Set(duplicateReports.map(({ path }) => path));
+  const invalidReportPoints = measured.filter((point) => typeof point.report !== 'string' || !point.report
+    || duplicateReportPaths.has(normalizePath(point.report)));
+  const declaredCount = campaign.parameters?.totalMeasuredRuns;
+  const countMatchesPlan = scenariosValid && repeatsValid && Number.isSafeInteger(declaredCount) && declaredCount === expected.size;
+  if (!countMatchesPlan) issues.push('Declared totalMeasuredRuns differs from the scenarios × repeats × 2 plan');
+  if (missing.length) issues.push(`${missing.length} planned scenario/repeat/strategy runs are missing`);
+  if (duplicates.length) issues.push(`${duplicates.length} scenario/repeat/strategy conditions have duplicate measured runs`);
+  if (unexpected.length) issues.push(`${unexpected.length} measured runs differ from the declared scenario/repeat/strategy/stage plan`);
+  if (duplicateReports.length) issues.push(`${duplicateReports.length} raw report paths are referenced more than once (warmup/measurement included)`);
+  if (invalidReportPoints.some((point) => !point.report)) issues.push('A measured run has no raw report path');
+  const unknownPhases = campaign.points.filter((point) => !['measure', 'warmup'].includes(point.phase)).length;
+  if (unknownPhases) issues.push(`${unknownPhases} campaign points have an unknown phase`);
+  return { plannedMeasuredRuns: scenariosValid && repeatsValid ? expected.size : null,
+    plannedGridValid: scenariosValid && repeatsValid && countMatchesPlan,
+    allPlannedRunsRecorded: scenariosValid && repeatsValid && !missing.length && !duplicates.length && !unexpected.length,
+    uniqueReportPaths: !duplicateReports.length && !invalidReportPoints.length,
+    missingPlannedRuns: missing, duplicatePlannedRuns: duplicates, unexpectedRuns: unexpected, duplicateReports,
+    unknownPhasePoints: unknownPhases, issues, invalidReportPoints: new Set(invalidReportPoints), invalidPlanPoints };
+}
+
+export function analyzeCardinality(campaign, loadedReports, resourceSamples = []) {
   if (campaign?.experiment !== 'cardinality' || campaign.schemaVersion !== 1 || !Array.isArray(campaign.points)) throw new Error('Expected cardinality campaign schemaVersion 1 with points');
   const reports = loadedReports instanceof Map ? loadedReports : new Map(Object.entries(loadedReports));
   const points = campaign.points.filter((point) => point.phase === 'measure');
-  const runs = points.map((point) => normalizeRun(point, reports.get(point.report), campaign));
+  const { invalidReportPoints, invalidPlanPoints, ...plan } = auditPlan(campaign, points);
+  const runs = points.map((point) => {
+    const loaded = reports.get(point.report);
+    const report = loaded?.report ?? (loaded && !loaded.readError ? loaded : null);
+    const run = normalizeRun(point, loaded, campaign);
+    run.resources = summarizeResources(resourceSamples, report?.poolWindow, report?.runner?.containerName);
+    const heap = distribution(resourceSamples.filter((sample) => Date.parse(sample.at) >= Date.parse(report?.poolWindow?.startedAt)
+      && Date.parse(sample.at) <= Date.parse(report?.poolWindow?.endedAt)).map((sample) => sample.jvm?.heapUsedBytes)
+      .filter((value) => Number.isFinite(value) && value >= 0));
+    run.resources.sampledHeapUsedBytes = heap;
+    Object.assign(run.resources.metrics, { sampledHeapUsedBytesMedian: heap.median, sampledHeapUsedBytesMin: heap.min, sampledHeapUsedBytesMax: heap.max });
+    if (invalidReportPoints.has(point)) {
+      run.measurementIssues.push('Raw report path is missing or reused by another campaign point; executions cannot be treated as independent replicates');
+      run.measurementValid = false; run.clean = false;
+    }
+    if (invalidPlanPoints.has(point)) {
+      run.measurementIssues.push('Measured execution differs from the declared scenario/repeat/strategy/stage plan');
+      run.measurementValid = false; run.clean = false;
+    }
+    return run;
+  });
   const groups = new Map();
   for (const run of runs) {
     const key = JSON.stringify([run.stage, run.commentsPerPost, run.attachmentsPerPost]);
@@ -254,6 +347,7 @@ export function analyzeCardinality(campaign, loadedReports) {
   const expected = finite(campaign.parameters?.totalMeasuredRuns);
   const terminal = ['completed', 'completed_with_load_failures'].includes(campaign.status) && Number.isFinite(Date.parse(campaign.completedAt));
   const warnings = (campaign.warnings ?? []).map((warning) => `[campaign] ${warning}`);
+  warnings.push(...plan.issues.map((message) => `[plan] ${message}`));
   if (!terminal) warnings.push('Campaign is incomplete; analysis may be partial.');
   if (expected !== runs.length) warnings.push(`Recorded ${runs.length} of ${expected ?? 'unknown'} planned measured runs.`);
   if (runs.some((run) => !run.clean)) warnings.push('Failed/invalid runs are retained and excluded from common clean pairs.');
@@ -263,7 +357,9 @@ export function analyzeCardinality(campaign, loadedReports) {
     if (group.settingVariantCount > 1) warnings.push(`${group.stage}/${group.scenario}: mixed settings prevent comparisons.`);
   }
   return { schemaVersion: 1, experiment: 'cardinality', analyzedAt: new Date().toISOString(), campaignStatus: campaign.status, parameters: campaign.parameters ?? {},
-    coverage: { campaignComplete: terminal && expected === runs.length, expectedMeasuredRuns: expected, measuredRuns: runs.length,
+    coverage: { campaignComplete: terminal && expected === runs.length && plan.plannedGridValid && plan.allPlannedRunsRecorded
+        && plan.uniqueReportPaths && plan.unknownPhasePoints === 0,
+      expectedMeasuredRuns: expected, measuredRuns: runs.length, ...plan,
       excludedWarmupPoints: campaign.points.filter((point) => point.phase === 'warmup').length,
       measurementValidRuns: runs.filter((run) => run.measurementValid).length, cleanRuns: runs.filter((run) => run.clean).length },
     methodology: [
@@ -274,6 +370,7 @@ export function analyzeCardinality(campaign, loadedReports) {
       'HTTP p99 is auxiliary; executions with fewer than 1000 successful responses are flagged in raw analysis. Closed-loop RPS is completed work at VU 1, not maximum service capacity.',
       'Crossover bands join opposite consistent winners in observed scenarios; exact thresholds are not fitted. Scenario paths vary two child counts and are not a universal scalar threshold.',
       'Exploration and confirmation stages, incompatible duration/IDs/timeouts/API settings remain separate. Elapsed time above duration + timeout + 2000ms is invalid.',
+      'Optional CPU/heap observations and approximate GC/allocation deltas reuse the existing monitor within each pool window; missing observations remain unavailable and do not invalidate HTTP measurements. CPU is 100%=one core; sampled heap maxima are not exact process peaks.',
     ], warnings, groups: grouped, crossovers: findCrossovers(grouped), runs };
 }
 
@@ -307,11 +404,11 @@ export function toMarkdown(analysis) {
 }
 
 export function toCsv(analysis) {
-  const columns = ['stage', 'scenario', 'commentsPerPost', 'attachmentsPerPost', 'repeat', 'strategy', 'order', 'reportStatus', 'exitCode', 'measurementValid', 'clean', 'actualRows', 'queryCount', 'p99EnoughSamples', ...metricNames,
+  const columns = ['stage', 'scenario', 'commentsPerPost', 'attachmentsPerPost', 'repeat', 'strategy', 'order', 'reportStatus', 'exitCode', 'measurementValid', 'clean', 'actualRows', 'queryCount', 'p99EnoughSamples', ...metricNames, ...resourceMetricNames,
     'startedRequests', 'completedRequests', 'successfulRequests', 'incompleteRequests', 'droppedIterations', 'httpErrorRate', 'contractErrorRate', 'measurementIssues', 'loadFailures', 'report'];
   const escape = (value) => { const string = value == null ? '' : String(value); return /[",\r\n]/.test(string) ? `"${string.replaceAll('"', '""')}"` : string; };
   return [columns.join(','), ...analysis.runs.map((run) => {
-    const row = { ...run, ...run.metrics, ...run.requests, measurementIssues: run.measurementIssues.join('; '), loadFailures: run.loadFailures.join('; ') };
+    const row = { ...run, ...run.metrics, ...run.resources.metrics, ...run.requests, measurementIssues: run.measurementIssues.join('; '), loadFailures: run.loadFailures.join('; ') };
     return columns.map((name) => escape(row[name])).join(',');
   })].join('\n') + '\n';
 }
@@ -329,7 +426,16 @@ export async function loadCardinality(input) {
     try { reports.set(point.report, { report: parse(await readFile(path, 'utf8')) }); }
     catch (error) { reports.set(point.report, { readError: error.message }); }
   }
-  return { campaignPath, campaign, reports, protectedPaths };
+  const resourceSamples = []; const resourceWarnings = [];
+  const resourcePath = join(dirname(campaignPath), 'resources.jsonl'); protectedPaths.add(resourcePath);
+  try {
+    const lines = (await readFile(resourcePath, 'utf8')).replace(/^\uFEFF/, '').split(/\r?\n/);
+    for (const [index, line] of lines.entries()) if (line.trim()) {
+      try { const sample = JSON.parse(line); if (!sample || typeof sample !== 'object') throw new Error('Expected a monitor sample object'); resourceSamples.push(sample); }
+      catch { resourceWarnings.push(`Optional resources.jsonl line ${index + 1} is invalid; omitted from resource observations.`); }
+    }
+  } catch (error) { if (error.code !== 'ENOENT') resourceWarnings.push(`Optional resource samples unavailable: ${error.message}`); }
+  return { campaignPath, campaign, reports, protectedPaths, resourceSamples, resourceWarnings };
 }
 
 async function main() {
@@ -345,7 +451,8 @@ async function main() {
   const normalized = (path) => process.platform === 'win32' ? resolve(path).toLowerCase() : resolve(path);
   const protectedPaths = new Set([...loaded.protectedPaths].map(normalized));
   if (targets.some((path) => protectedPaths.has(normalized(path)))) throw new Error('Analysis must not overwrite campaign or raw reports');
-  const result = analyzeCardinality(loaded.campaign, loaded.reports);
+  const result = analyzeCardinality(loaded.campaign, loaded.reports, loaded.resourceSamples);
+  result.warnings.push(...loaded.resourceWarnings);
   await mkdir(dirname(prefix), { recursive: true });
   await writeFile(targets[0], JSON.stringify(result, null, 2) + '\n'); await writeFile(targets[1], toMarkdown(result)); await writeFile(targets[2], toCsv(result));
   console.log(JSON.stringify({ outputs: targets, coverage: result.coverage, crossovers: result.crossovers, warnings: result.warnings }, null, 2));
