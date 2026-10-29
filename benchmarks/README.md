@@ -4,6 +4,10 @@
 
 추가 RTT를 바꾸는 세 번째 실험은 [DB 왕복 지연 실험](../docs/LATENCY_STUDY.md)에 정리했습니다. `latency-study.ps1`이 별도 Java 클라이언트로 Toxiproxy를 제어하며, `analyze-latency.mjs`가 단계·RTT·풀·부하별 정상 비교 쌍과 실패를 구분해 저장합니다.
 
+네 번째 [cardinality 실험](../docs/CARDINALITY_STUDY.md)은 `cardinality-study.ps1`과 `analyze-cardinality.mjs`를 사용합니다. direct DB·VU 1·풀 10·고정 본문/부모 수에서 댓글/첨부 수만 바꾸며, 데이터마다 양 전략을 워밍업합니다. 별도 DB 진단은 HTTP 측정 후 `explain-cardinality.mjs`, 그림은 `plot-cardinality.py`로 생성합니다. 실제 명령과 원시 데이터 위치는 [측정 기록](../docs/measurements/cardinality-2026-10-30-analysis.md)에 있습니다.
+
+`pool-run.mjs --expected-rows N --expected-query-rows N1,N2,N3`는 k6 모든 응답의 기대 행 수를 검사하는 선택 옵션입니다(v1은 값 1개). 기존 실행은 옵션을 생략할 수 있습니다. 측정 JSON에는 `query_count`와 `query_1_rows`~`query_3_rows` trend도 저장하며, 사용하지 않은 SELECT의 trend는 비어 있습니다.
+
 먼저 같은 데이터와 ID를 사용하는지 확인합니다. 비교 중 재생성 버튼을 누르거나 다른 부하·EXPLAIN을 실행하지 않습니다. `/v1/posts`는 1회 JOIN, `/v2/posts`는 순차 3회 SELECT입니다. 두 방식 모두 `mode=benchmark`에서도 가벼운 요청별 계측을 수행하므로, 결과는 이 계측이 포함된 비용입니다.
 
 ## 단일 요청 반복 비교 (Node 22+, 별도 패키지 불필요)
