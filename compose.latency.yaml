@@ -1,0 +1,27 @@
+# Optional experiment overlay; the ordinary compose.yaml retains the direct route.
+services:
+  toxiproxy:
+    image: ghcr.io/shopify/toxiproxy:2.13.0
+    environment:
+      LOG_LEVEL: warn
+    ports:
+      - "127.0.0.1:${TOXIPROXY_API_PORT:-8474}:8474"
+    cpus: ${TOXIPROXY_CPUS:-4.0}
+    mem_limit: 256m
+
+  server:
+    environment:
+      DB_URL: ${LATENCY_DB_URL:-jdbc:postgresql://toxiproxy:8666/querylab}
+
+  toxiproxy-control:
+    profiles: [latency-tools]
+    build:
+      context: ./benchmarks/toxiproxy-client
+    environment:
+      TOXIPROXY_HOST: toxiproxy
+      TOXIPROXY_PORT: "8474"
+      DB_NAME: querylab
+      DB_USERNAME: querylab
+      DB_PASSWORD: ${DB_PASSWORD:-querylab}
+    cpus: "1.0"
+    mem_limit: 256m

@@ -64,3 +64,16 @@
 - 별도 arrival 100 req/s·3초 실행은 301건 완료, dropped 0, 획득 증가량 301건으로 검증했다.
 - 의도적으로 VU를 1로 제한한 arrival 500 req/s·2초 실행에서는 dropped 748건을 기록하고 load_failed로 저장했다. HTTP 오류는 0이었으므로 생성하지 못한 요청과 서버 오류가 구분되는 것을 확인했다.
 - matrix 종료 후 원래 Compose 풀 설정을 복원했다. 원시 JSON·summary.csv·manifest는 로컬 `benchmarks/results/pool-matrix-verification/`에 저장했다.
+
+## DB 왕복 지연 실험 검증 (2026-10-29)
+
+조회 애플리케이션 코드는 유지하고 별도 Toxiproxy Compose overlay, Java 제어·교정 도구, 반복 실행기와 분석기를 추가했다. 설계와 실측값은 [지연 실험 안내](LATENCY_STUDY.md)와 [측정 기록](measurements/latency-2026-10-29-analysis.md)에 정리했다.
+
+- 벤치마크 Node 테스트 44개가 통과했다. 정상 쌍의 집계, 실패 보존, 잘못된 RTT·프록시 설정, 단계·부하 조건 혼입, 측정 시간 공백과 정상 종료 대기의 구분을 포함한다.
+- Java 제어 도구 Docker 빌드에서 테스트 5개가 통과했다. 실제 PostgreSQL/Toxiproxy 연결에서도 지연 제어와 재사용 JDBC 연결의 교정을 확인했다.
+- 전체 Compose 프로파일의 설정 검사와 PowerShell 구문 검사가 통과했다.
+- 주요 캠페인 측정 126회는 전부 계측 유효였다. 정상 122회·부하 실패 4회이며, 측정 요청 844,085건 중 성공 844,081건, 획득 timeout 4건, dropped·미완료는 0건이다. 워밍업 42회는 제외했다.
+- 별도로 중단한 1코어 프록시 부하 시도의 4개 실행은 진단 기록으로 보존했다. 주요 결과와 합치지 않았다.
+- 종료 후 DB 직접 연결, 풀 상한·minimumIdle 10개, 획득 timeout 30,000ms·검증 timeout 500ms를 확인했다. 기존 데이터와 nginx의 API 연결도 유지됐다.
+- 임시 Windows 절전 방지 요청이 같은 스레드에서 해제됐고 시작·종료 시 AC 연결 상태를 확인했다. 자원 관측 프로세스와 이번 실험의 프록시 컨테이너는 종료했다.
+- Matplotlib PNG/SVG를 생성하고 PNG의 축·범례·관측 범위·정상 쌍 수·단계별 프록시 CPU 상한 표시를 직접 확인했다.
