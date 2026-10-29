@@ -30,7 +30,7 @@ while (true) {
     (async () => {
       try {
         const names = (await docker('ps', '--filter', 'label=com.docker.compose.project=spring-query-lab', '--format', '{{.Names}}'))
-          .split(/\r?\n/).filter((name) => /server|db|querylab-load-/.test(name));
+          .split(/\r?\n/).filter((name) => /server|db|toxiproxy-\d+$|querylab-load-/.test(name));
         const stable = names.filter((name) => !name.startsWith('querylab-load-'));
         const generators = names.filter((name) => name.startsWith('querylab-load-'));
         await Promise.all([stable, generators].filter((group) => group.length).map(async (group) => {

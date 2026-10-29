@@ -2,6 +2,8 @@
 
 풀 크기와 동시성의 교차 실행, Hikari 획득·점유 시간 수집, 고정 도착률 비교는 [동시 요청·풀 실험 안내](../docs/CONCURRENCY.md)를 참고합니다. `pool-run.mjs`는 한 조건의 k6와 풀 지표를 함께 저장하고, `pool-matrix.ps1`는 풀 설정별 실행 후 원래 설정으로 복원합니다.
 
+추가 RTT를 바꾸는 세 번째 실험은 [DB 왕복 지연 실험](../docs/LATENCY_STUDY.md)에 정리했습니다. `latency-study.ps1`이 별도 Java 클라이언트로 Toxiproxy를 제어하며, `analyze-latency.mjs`가 단계·RTT·풀·부하별 정상 비교 쌍과 실패를 구분해 저장합니다.
+
 먼저 같은 데이터와 ID를 사용하는지 확인합니다. 비교 중 재생성 버튼을 누르거나 다른 부하·EXPLAIN을 실행하지 않습니다. `/v1/posts`는 1회 JOIN, `/v2/posts`는 순차 3회 SELECT입니다. 두 방식 모두 `mode=benchmark`에서도 가벼운 요청별 계측을 수행하므로, 결과는 이 계측이 포함된 비용입니다.
 
 ## 단일 요청 반복 비교 (Node 22+, 별도 패키지 불필요)

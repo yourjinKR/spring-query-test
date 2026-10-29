@@ -135,6 +135,8 @@ node benchmarks/compare.mjs --ids 1,2,3,4,5,6,7,8,9,10 --warmup 10 --repeats 30
 
 [30초·5쌍 반복 측정 결과](docs/REPEATED_STUDY.md)에는 풀 2/10개, 동시 요청 1/20개 및 150 req/s의 총 60회 결과와 실패 내역을 정리했습니다. `benchmarks/repeat-study.ps1`로 재현하고 `benchmarks/analyze-study.mjs`로 같은 반복 쌍을 분석할 수 있습니다.
 
+[DB 왕복 지연 실험](docs/LATENCY_STUDY.md)은 Toxiproxy와 별도 Java 제어 도구로 추가 RTT를 바꾸며 조회 전략의 역전 구간과 연결 점유·풀 대기 변화를 비교합니다.
+
 ```powershell
 docker compose run --rm -e STRATEGY=v1 -e VUS=5 -e DURATION=30s k6
 docker compose run --rm -e STRATEGY=v2 -e VUS=5 -e DURATION=30s k6

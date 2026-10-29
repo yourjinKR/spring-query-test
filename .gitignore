@@ -10,6 +10,7 @@ client/.cache/
 client/.npm-cache/
 .cache/
 benchmarks/results/
+benchmarks/toxiproxy-client/target/
 artifacts/
 
 # Local settings
