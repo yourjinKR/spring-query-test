@@ -24,6 +24,16 @@ unrelated_counter_total 999
 `;
 }
 
+test('optional cardinality row invariants pass to k6 and default runs stay opt-in', () => {
+  const options = parseArgs(['--strategy', 'v2', '--expected-rows', '10', '--expected-query-rows', '10,0,0']);
+  assert.deepEqual(options.expectedQueryRows, [10, 0, 0]);
+  const args = dockerArguments(options);
+  assert.ok(args.includes('EXPECTED_ROWS=10'));
+  assert.ok(args.includes('EXPECTED_QUERY_ROWS=10,0,0'));
+  assert.equal(dockerArguments(parseArgs([])).some((arg) => arg.startsWith('EXPECTED_')), false);
+  assert.throws(() => parseArgs(['--strategy', 'v2', '--expected-rows', '10', '--expected-query-rows', '10,1,0']), /sum/);
+});
+
 test('Prometheus parsing preserves escaped labels and matches pools independently of label order', () => {
   const labels = String.raw`application="lab",pool="query\\lab\"x\nline"`;
   const pools = parsePoolMetrics(fixture({ labels }));

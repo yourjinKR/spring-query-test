@@ -6,6 +6,7 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { setTimeout as delay } from 'node:timers/promises';
 import { parseIds } from './compare.mjs';
+import { parseLoadConfig } from './lib/load-config.mjs';
 
 const repositoryRoot = fileURLToPath(new URL('../', import.meta.url));
 const gaugeNames = {
@@ -158,6 +159,7 @@ export function parseArgs(args) {
     '--preallocated-vus': 'preallocatedVus', '--max-vus': 'maxVus', '--duration': 'duration',
     '--warmup': 'warmup', '--sample-ms': 'sampleMs', '--ids': 'ids', '--base-url': 'baseUrl',
     '--docker-base-url': 'dockerBaseUrl', '--request-timeout': 'requestTimeout', '--output': 'output',
+    '--expected-rows': 'expectedRows', '--expected-query-rows': 'expectedQueryRows',
   };
   const numeric = ['vus', 'rate', 'preallocatedVus', 'maxVus', 'warmup', 'sampleMs'];
   for (let index = 0; index < args.length; index += 2) {
@@ -181,6 +183,14 @@ export function parseArgs(args) {
     const milliseconds = match ? Number(match[1]) * ({ ms: 1, s: 1000, m: 60_000 })[match[2]] : 0;
     if (milliseconds < 1000 || milliseconds > maximum) throw new Error(`${key} must be a duration between 1s and ${maximum / 1000}s`);
     if (key === 'duration') options.durationMs = milliseconds;
+  }
+  if (options.expectedRows != null || options.expectedQueryRows != null) {
+    const expected = parseLoadConfig({ STRATEGY: options.strategy,
+      ...(options.expectedRows != null ? { EXPECTED_ROWS: options.expectedRows } : {}),
+      ...(options.expectedQueryRows != null ? { EXPECTED_QUERY_ROWS: options.expectedQueryRows } : {}),
+    });
+    options.expectedRows = expected.expectedRows;
+    options.expectedQueryRows = expected.expectedQueryRows;
   }
   return options;
 }
@@ -211,6 +221,8 @@ export function dockerArguments(options, containerName = `querylab-load-${random
     IDS: options.ids.join(','), VUS: options.vus, RATE: options.rate,
     PREALLOCATED_VUS: options.preallocatedVus, MAX_VUS: options.maxVus,
     DURATION: options.duration, REQUEST_TIMEOUT: options.requestTimeout, WARMUP: 0,
+    ...(options.expectedRows != null ? { EXPECTED_ROWS: options.expectedRows } : {}),
+    ...(options.expectedQueryRows != null ? { EXPECTED_QUERY_ROWS: options.expectedQueryRows.join(',') } : {}),
   };
   return ['compose', 'run', '--rm', '--no-deps', '--name', containerName, '-T', ...Object.entries(environment).flatMap(([key, value]) => ['-e', `${key}=${value}`]), 'k6', 'run', '--quiet', '/scripts/load.js'];
 }

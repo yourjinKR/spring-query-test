@@ -137,6 +137,8 @@ node benchmarks/compare.mjs --ids 1,2,3,4,5,6,7,8,9,10 --warmup 10 --repeats 30
 
 [DB 왕복 지연 실험](docs/LATENCY_STUDY.md)은 Toxiproxy와 별도 Java 제어 도구로 추가 RTT를 바꾸며 조회 전략의 역전 구간과 연결 점유·풀 대기 변화를 비교합니다.
 
+[4차 cardinality 실험](docs/CARDINALITY_STUDY.md)은 direct DB·VU 1·풀 10에서 댓글/첨부 수만 늘립니다. `cardinality-study.ps1`로 탐색·반복 측정하고, 예상/실측 행·DTO·SELECT 횟수를 검사한 뒤 `analyze-cardinality.mjs`로 공통 정상 쌍을 분석합니다. [실측 결과와 그래프](docs/measurements/cardinality-2026-10-30-analysis.md)를 함께 제공합니다.
+
 ```powershell
 docker compose run --rm -e STRATEGY=v1 -e VUS=5 -e DURATION=30s k6
 docker compose run --rm -e STRATEGY=v2 -e VUS=5 -e DURATION=30s k6

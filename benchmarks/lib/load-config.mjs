@@ -55,7 +55,24 @@ export function parseLoadConfig(environment = {}) {
     rate: null,
     preAllocatedVUs: null,
     maxVUs: null,
+    expectedRows: null,
+    expectedQueryRows: null,
   };
+
+  if (environment.EXPECTED_ROWS != null) {
+    config.expectedRows = integerSetting(environment, 'EXPECTED_ROWS', 0, 0, 250_000);
+  }
+  if (environment.EXPECTED_QUERY_ROWS != null) {
+    const parts = String(environment.EXPECTED_QUERY_ROWS).split(',');
+    const count = strategy === 'v1' ? 1 : 3;
+    if (parts.length !== count || parts.some((part) => !/^\d+$/.test(part) || !Number.isSafeInteger(Number(part)) || Number(part) > 250_000)) {
+      throw new Error(`EXPECTED_QUERY_ROWS must contain ${count} bounded nonnegative row counts`);
+    }
+    config.expectedQueryRows = parts.map(Number);
+    if (config.expectedRows == null || config.expectedQueryRows.reduce((sum, rows) => sum + rows, 0) !== config.expectedRows) {
+      throw new Error('EXPECTED_QUERY_ROWS must sum to EXPECTED_ROWS');
+    }
+  }
 
   if (loadModel === 'closed') {
     config.vus = integerSetting(environment, 'VUS', 5, 1, 200);
@@ -66,6 +83,14 @@ export function parseLoadConfig(environment = {}) {
     if (config.preAllocatedVUs > config.maxVUs) throw new Error('PREALLOCATED_VUS must not exceed MAX_VUS');
   }
   return config;
+}
+
+/** Optional campaign invariants; ordinary latency/pool runs keep their existing contract. */
+export function matchesExpectedRows(metrics, config) {
+  return (config.expectedRows == null || metrics?.totalRows === config.expectedRows)
+    && (config.expectedQueryRows == null || (Array.isArray(metrics?.queries)
+      && metrics.queries.length === config.expectedQueryRows.length
+      && config.expectedQueryRows.every((rows, index) => metrics.queries[index]?.rows === rows)));
 }
 
 export function buildMeasuredScenario(config) {
