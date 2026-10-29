@@ -104,7 +104,8 @@ def plot_rows(groups, prefix):
 def plot_latency(blocks, prefix):
     figure, axes = plt.subplots(len(blocks), 2, figsize=(13, 4.2 * len(blocks) + 1.5), squeeze=False)
     figure.subplots_adjust(left=0.07, right=0.98, top=0.83 if len(blocks) == 1 else 0.88,
-                           bottom=0.23 if len(blocks) == 1 else 0.15, hspace=0.55, wspace=0.20)
+                           bottom=0.23 if len(blocks) == 1 else 0.19, hspace=0.55, wspace=0.20)
+    has_low_cardinality_zoom = False
     for row, (label, groups) in enumerate(blocks):
         duration = groups[0]["scanSettings"]["durationMs"] / 1000
         positions = list(range(len(groups)))
@@ -122,15 +123,55 @@ def plot_latency(blocks, prefix):
             axis.set_xlabel("Comments / attachments per post", labelpad=7)
             axis.set_ylabel("HTTP latency (ms)")
             style_axis(axis)
-            axis.legend(frameon=False, fontsize=9)
+            low_groups = [group for group in groups if group["expectedRows"]["v1"] <= 250]
+            if label == "Confirmation" and len(low_groups) >= 2:
+                has_low_cardinality_zoom = True
+                # Keep the full-range categorical comparison intact. A separate
+                # inset scale exposes the low-row differences without joining
+                # exploration requests to the confirmation observations.
+                zoom = axis.inset_axes([0.075, 0.44, 0.47, 0.45])
+                low_positions = list(range(len(low_groups)))
+                low_extents = []
+                for strategy, _, color, marker, line in STRATEGIES:
+                    low_stats = [group["pairedRunMetrics"][strategy][metric] for group in low_groups]
+                    low_centers = [stat["median"] for stat in low_stats]
+                    zoom.errorbar(low_positions, low_centers,
+                                  yerr=[[stat["median"] - stat["min"] for stat in low_stats],
+                                        [stat["max"] - stat["median"] for stat in low_stats]],
+                                  capsize=2.5, linewidth=1.25, markersize=4,
+                                  color=color, marker=marker, linestyle=line)
+                    low_extents.extend(value for stat in low_stats for value in (stat["min"], stat["max"]))
+                style_axis(zoom)
+                low_min, low_max = min(low_extents), max(low_extents)
+                padding = max((low_max - low_min) * 0.18, low_max * 0.04, 0.05)
+                zoom.set_ylim(max(0, low_min - padding), low_max + padding)
+                zoom.set_xticks(low_positions, [group["scenario"] for group in low_groups], fontsize=7)
+                zoom.tick_params(axis="y", labelsize=7)
+                zoom.set_ylabel("ms (zoom)", fontsize=7, labelpad=3)
+                zoom.set_title("JOIN \u2264 250 rows: expanded scale", fontsize=8, loc="left", pad=5)
+                for spine in zoom.spines.values():
+                    spine.set_visible(True)
+                    spine.set_color("#aab3c2")
+                    spine.set_linewidth(0.7)
+                # The inset occupies the upper left. Headroom reserves the
+                # upper right for the main legend above the full-range curve.
+                full_max = max(group["pairedRunMetrics"][strategy][metric]["max"]
+                               for group in groups for strategy, *_ in STRATEGIES)
+                axis.set_ylim(top=max(full_max * 1.20, 0.1))
+                axis.legend(loc="upper right", frameon=False, fontsize=8)
+            else:
+                axis.legend(frameon=False, fontsize=9)
     figure.suptitle("Query-strategy latency as child cardinality grows", fontsize=17, fontweight="bold")
     figure.text(0.5, 0.91 if len(blocks) == 1 else 0.93,
                 "Fixed IDs 1-10 · body 1,024 bytes · UNIFORM · direct DB · pool 10 · 1 VU",
                 ha="center", fontsize=10, color="#526078")
+    zoom_note = ("\nConfirmation insets magnify JOIN \u2264 250-row scenarios; inset y-axis scales differ from the main panels."
+                 if has_low_cardinality_zoom else "")
     figure.text(0.5, 0.035,
                 "Matched clean run pairs only; n = independent run pairs. Centers = median of run statistics.\n"
                 "Whiskers = observed run min/max, not confidence intervals. Request percentiles are not pooled.\n"
-                "Exploration and confirmation remain separate; categorical spacing does not imply equal row-count increments.",
+                "Exploration and confirmation remain separate; categorical spacing does not imply equal row-count increments."
+                + zoom_note,
                 ha="center", fontsize=9, color="#526078")
     save_figure(figure, prefix, "latency")
 

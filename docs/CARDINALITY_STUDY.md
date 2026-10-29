@@ -84,7 +84,7 @@ python benchmarks/plot-cardinality.py --sweep benchmarks/results/cardinality-swe
 
 `totalRows`는 QueryDSL이 가져온 평탄한 결과 행 수다. DB 내부 scan rows·네트워크 bytes가 아니다. 본문은 고정하지만 결과 중복과 실제 wire bytes의 관계를 계측한 실험도 아니다. 단일 JOIN assembler는 중복 행마다 자식 DTO를 만들고 `putIfAbsent`하므로, 측정에는 현재 구현의 중복 제거·할당 비용도 반영된다.
 
-DB 진단은 앱 analysis SQL의 `?`에 같은 ID를 대입해 `EXPLAIN (ANALYZE, BUFFERS, FORMAT JSON)`을 쿼리별 반복 실행한다. 최상위 rows, 중간 JOIN rows/loops, 실제 DB execution time, 버퍼 hit/read, JOIN 방식과 temp를 보존한다. 상위 노드의 buffers는 하위를 포함할 수 있어 노드별 합계를 만들지 않는다. EXPLAIN은 일반 결과 전송·DTO 조립을 하지 않으므로 HTTP 시간과 같은 값으로 비교하지 않는다. `pg_stat_statements`도 본 측정 후 분리한 요청 블록의 전후 차이만 보조적으로 사용한다.
+DB 진단은 앱 analysis SQL의 `?`에 같은 ID를 대입해 `EXPLAIN (ANALYZE, BUFFERS, FORMAT JSON)`을 쿼리별 반복 실행한다. 최상위 rows, 중간 JOIN rows/loops, 실제 DB execution time, 버퍼 hit/read, JOIN 방식과 temp를 보존한다. 상위 노드의 buffers는 하위를 포함할 수 있어 노드별 합계를 만들지 않는다. EXPLAIN은 일반 결과 전송·DTO 조립을 하지 않으므로 HTTP 시간과 같은 값으로 비교하지 않는다. literal SQL의 별도 진단이며 PgJDBC의 prepared/generic plan이나 앱의 readOnly REPEATABLE READ 트랜잭션 문맥을 동일하게 재현하지는 않는다. `pg_stat_statements`도 본 측정 후 분리한 요청 블록의 전후 차이만 보조적으로 사용한다.
 
 ## 결과와 후속 범위
 

@@ -2,6 +2,8 @@
 
 동시 요청의 처리량·커넥션 풀 획득·점유 시간은 [동시 요청·풀 실험](CONCURRENCY.md)에서 별도로 다룹니다. Service 내부의 조회 타이머가 트랜잭션 진입의 커넥션 획득 대기를 포함한다고 가정하지 않습니다.
 
+direct DB 경로에서 댓글·첨부 cardinality만 변화시킨 반복 실측은 [4차 cardinality 실험](CARDINALITY_STUDY.md)에 정리했습니다. [측정 기록](measurements/cardinality-2026-10-30-analysis.md)에서 예상/실측 행, 반복별 우위와 혼재, 별도 실행 계획을 확인할 수 있습니다.
+
 ## 비교 대상
 
 같은 게시글 ID 집합의 `Post + Comment[] + Attachment[]`를 조회한다. 게시글과 두 자식 컬렉션은 모두 ID 오름차순으로 정렬한다. 없는 ID는 생략하고 자식 없는 게시글은 빈 배열로 반환한다.
