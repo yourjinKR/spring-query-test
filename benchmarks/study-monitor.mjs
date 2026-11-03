@@ -58,6 +58,7 @@ while (true) {
           gcPauseSeconds: numericSample(text, 'jvm_gc_pause_seconds_sum', true),
           gcPauseCount: numericSample(text, 'jvm_gc_pause_seconds_count', true),
           allocatedBytes: numericSample(text, 'jvm_gc_memory_allocated_bytes_total', true),
+          heapUsedBytes: numericSample(text.split(/\r?\n/).filter((line) => line.includes('area="heap"')).join('\n'), 'jvm_memory_used_bytes', true),
           info: text.split(/\r?\n/).find((line) => line.startsWith('jvm_info{')) ?? null,
         };
       } catch (error) { record.errors.push(`jvm: ${error.message}`); }

@@ -2,7 +2,7 @@ import http from 'k6/http';
 import execution from 'k6/execution';
 import { check, fail } from 'k6';
 import { Counter, Rate, Trend } from 'k6/metrics';
-import { buildMeasuredScenario, parseLoadConfig, summarizeMeasuredLoad } from './lib/load-config.mjs';
+import { buildMeasuredScenario, matchesExpectedRows, parseLoadConfig, summarizeMeasuredLoad } from './lib/load-config.mjs';
 
 const config = parseLoadConfig(__ENV);
 const { strategy, baseUrl, ids, warmup, loadModel, requestTimeout } = config;
@@ -17,6 +17,8 @@ const fetchAndAssembleMs = new Trend('fetch_and_assemble_ms', true);
 const jdbcExecuteMs = new Trend('jdbc_execute_ms', true);
 const assemblyMs = new Trend('assembly_ms', true);
 const returnedRows = new Trend('returned_rows');
+const queryCount = new Trend('query_count');
+const queryRows = [1, 2, 3].map((index) => new Trend(`query_${index}_rows`));
 const contractErrors = new Rate('contract_errors');
 const expectedQueries = strategy === 'v1' ? 1 : 3;
 const url = `${baseUrl}/${strategy}/posts?ids=${encodeURIComponent(ids.join(','))}&mode=benchmark`;
@@ -60,18 +62,25 @@ export default function () {
     'expected SELECT count': () => result?.metrics?.queryCount === expectedQueries,
     'posts is an array': () => Array.isArray(result?.posts),
     'finite nonnegative row count': () => Number.isFinite(result?.metrics?.totalRows) && result.metrics.totalRows >= 0,
+    'expected campaign rows': () => matchesExpectedRows(result?.metrics, config),
     'finite nonnegative server timings': () => ['fetchAndAssembleMs', 'jdbcExecuteMs', 'assemblyMs']
       .every((name) => Number.isFinite(result?.metrics?.[name]) && result.metrics[name] >= 0),
     'benchmark omits SQL text': () => Array.isArray(result?.metrics?.queries)
       && result.metrics.queries.every((query) => query.sql == null || query.sql === ''),
   }, { phase: 'measure' });
   contractErrors.add(!valid);
+  // Keep finite row observations even when a campaign invariant fails. A failed
+  // response must not disappear from the evidence needed to diagnose the mismatch.
+  if (Number.isFinite(result?.metrics?.totalRows)) returnedRows.add(result.metrics.totalRows);
+  if (Number.isFinite(result?.metrics?.queryCount)) queryCount.add(result.metrics.queryCount);
+  if (Array.isArray(result?.metrics?.queries)) result.metrics.queries.forEach((query, index) => {
+    if (Number.isFinite(query.rows)) queryRows[index]?.add(query.rows);
+  });
   if (!valid) return;
   measuredSuccesses.add(1);
   fetchAndAssembleMs.add(result.metrics.fetchAndAssembleMs);
   jdbcExecuteMs.add(result.metrics.jdbcExecuteMs);
   assemblyMs.add(result.metrics.assemblyMs);
-  returnedRows.add(result.metrics.totalRows);
 }
 
 export function handleSummary(data) {

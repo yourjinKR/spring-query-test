@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { buildMeasuredScenario, parseLoadConfig, summarizeMeasuredLoad } from './lib/load-config.mjs';
+import { buildMeasuredScenario, matchesExpectedRows, parseLoadConfig, summarizeMeasuredLoad } from './lib/load-config.mjs';
 
 test('defaults preserve closed-loop execution and configurable zero warmup', () => {
   const config = parseLoadConfig({ WARMUP: '0' });
@@ -70,4 +70,21 @@ test('no completed requests yields no invented latency/rate or error-rate observ
   assert.equal(summary.successfulRequestsPerSecond, null);
   assert.equal(summary.measuredElapsedMs, null);
   assert.equal(summary.httpErrorRate, null);
+});
+
+test('cardinality invariants include empty child queries and reject inconsistent rows', () => {
+  const config = parseLoadConfig({ STRATEGY: 'v2', EXPECTED_ROWS: '10', EXPECTED_QUERY_ROWS: '10,0,0' });
+  const metrics = { totalRows: 10, queries: [{ rows: 10 }, { rows: 0 }, { rows: 0 }] };
+  assert.ok(matchesExpectedRows(metrics, config));
+  assert.equal(matchesExpectedRows({ ...metrics, totalRows: 11 }, config), false);
+  assert.equal(matchesExpectedRows({ ...metrics, queries: [{ rows: 9 }, { rows: 1 }, { rows: 0 }] }, config), false);
+  assert.equal(matchesExpectedRows({ totalRows: 10 }, config), false);
+  assert.ok(matchesExpectedRows(undefined, parseLoadConfig({})));
+  for (const environment of [
+    { EXPECTED_ROWS: '-1' }, { EXPECTED_ROWS: '250001' },
+    { EXPECTED_QUERY_ROWS: '10' },
+    { STRATEGY: 'v2', EXPECTED_ROWS: '10', EXPECTED_QUERY_ROWS: '10,0' },
+    { STRATEGY: 'v2', EXPECTED_ROWS: '10', EXPECTED_QUERY_ROWS: '10,1,0' },
+    { EXPECTED_ROWS: '10', EXPECTED_QUERY_ROWS: 'NaN' },
+  ]) assert.throws(() => parseLoadConfig(environment), /EXPECTED/);
 });
